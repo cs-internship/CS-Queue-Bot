@@ -1,6 +1,8 @@
+require("dotenv").config();
 const { Telegraf } = require("telegraf");
+const express = require("express");
 
-const bot = new Telegraf("8193011072:AAFPR_j20K0Le63JXlGuuxxG0OgtCJNdzu8");
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 const welcomeMessage = (username, firstName) => {
     return `سلام ${username ? "@" + username : firstName}
@@ -17,12 +19,24 @@ bot.on("new_chat_members", (ctx) => {
 
     newMembers.forEach((member) => {
         const username = member.username;
-        const firstName = member.first_name || "کاربر عزیز";
-        
+        const firstName = member.first_name || "";
+
         ctx.reply(welcomeMessage(username, firstName));
     });
 });
 
 bot.launch();
-
 console.log("Bot is ALIVE!");
+
+// Express Section for using port for the bot
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+    res.send("Bot is running!");
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
