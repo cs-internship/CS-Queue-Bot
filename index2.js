@@ -6,8 +6,13 @@ const axios = require("axios");
 const ORGANIZATION = "cs-internship";
 const PROJECT = "CS Internship Program";
 const PARENT_ID = 30789;
-const workItemId = 30791;
+const workItemId = 31065;
 const groupID = "-1002368870938"; // Test group ID
+const userCooldowns = new Map();
+const userMessageCounts = new Map();
+const SPAM_THRESHOLD = 10;
+const SPAM_TIME_WINDOW = 10 * 1000;
+const COMMAND_COOLDOWN = 15 * 1000;
 
 const AUTH = `Basic ${Buffer.from(`:${process.env.PAT_TOKEN}`).toString(
     "base64"
@@ -18,10 +23,13 @@ const app = express();
 app.use(express.json());
 
 const createWorkItem = async (ctx, userData, isNewID) => {
+    if (!userData.username) {
+        ctx.reply(`کاربر یوزرنیم ندارد! 🤖`);
+        return;
+    }
+
     try {
         ctx.reply(`در حال دریافت اطلاعات Work Item ${workItemId}...`);
-
-        console.log(ctx.message);
 
         const res = await axios.get(
             `https://dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/wit/workitems/${workItemId}?api-version=7.1-preview.3`,
@@ -31,11 +39,9 @@ const createWorkItem = async (ctx, userData, isNewID) => {
         const originalWorkItem = res.data;
         const fieldsToCopy = {
             "System.Title": `Entrance Path: @${userData.username} - ${
-                userData.first_name
-                    ? userData.first_name
-                    : "" + " " + userData?.last_name
-                    ? userData.last_name
-                    : ""
+                (userData.first_name ? userData.first_name : "") +
+                " " +
+                (userData.last_name ? userData.last_name : "")
             }`,
             "System.Description": `<div style="text-align: right;">تاریخ ورود به گروه: ${new Date(
                 ctx.message.date * 1000
@@ -79,7 +85,7 @@ const createWorkItem = async (ctx, userData, isNewID) => {
 
         ctx.reply("در حال ایجاد کلون جدید...");
         const createRes = await axios.post(
-            `https://dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/wit/workitems/$Task?api-version=7.1-preview.3`,
+            `https://dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/wit/workitems/$Product%20Backlog%20Item?api-version=7.1-preview.3`,
             payload,
             {
                 headers: {
@@ -91,8 +97,7 @@ const createWorkItem = async (ctx, userData, isNewID) => {
 
         ctx.reply(`کلون با موفقیت ایجاد شد! ID: ${createRes.data.id}`);
     } catch (error) {
-        console.error("Error cloning work item >>", error);
-        ctx.reply("خطا در کلون کردن Work Item.");
+        errorReply(ctx);
     } finally {
         if (isNewID) {
             ctx.reply(`سلام @${userData.username}
@@ -106,13 +111,116 @@ const createWorkItem = async (ctx, userData, isNewID) => {
     }
 };
 
-bot.command("add_ID", async (ctx) => {
-    if (!ctx.message.reply_to_message) {
+const sendIDKEmoji = async (ctx) => {
+    try {
         await ctx.telegram.callApi("setMessageReaction", {
             chat_id: ctx.chat.id,
             message_id: ctx.message.message_id,
             reaction: [{ type: "emoji", emoji: "🤷‍♂️" }],
         });
+    } catch (error) {
+        errorReply(ctx);
+    }
+};
+
+const errorReply = (ctx) => {
+    ctx.reply("خطایی رخ داده است! 🤖");
+};
+
+const isAdminTalking = async (ctx) => {
+    try {
+        const member = await ctx.telegram.getChatMember(
+            ctx.chat.id,
+            ctx.from.id
+        );
+
+        if (member.status === "administrator" || member.status === "creator") {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        errorReply(ctx);
+        return false;
+    }
+};
+
+bot.command("Aloha", async (ctx) => {
+    if (ctx.message.chat.id != groupID) {
+        ctx.reply(
+            "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
+        );
+        return;
+    }
+
+    if (ctx.message.from.username) {
+        ctx.reply(`Aloha :)\n\n@${ctx.message.from.username}\n@Ali_Sdg90`);
+    }
+});
+
+const isSpamming = (userId) => {
+    const now = Date.now();
+    if (!userMessageCounts.has(userId)) {
+        userMessageCounts.set(userId, []);
+    }
+    const timestamps = userMessageCounts.get(userId);
+    timestamps.push(now);
+    userMessageCounts.set(
+        userId,
+        timestamps.filter((t) => now - t < SPAM_TIME_WINDOW)
+    );
+    return timestamps.length > SPAM_THRESHOLD;
+};
+
+const isOnCooldown = (userId) => {
+    const lastUsed = userCooldowns.get(userId) || 0;
+    return Date.now() - lastUsed < COMMAND_COOLDOWN;
+};
+
+bot.use(async (ctx, next) => {
+    if (ctx.message && ctx.message.chat.id == groupID) {
+        const userId = ctx.from.id;
+        if (isSpamming(userId)) {
+            ctx.reply(
+                `کاربر @${ctx.from.username} به دلیل ارسال پیام‌های زیاد به عنوان اسپم شناسایی شد و از گروه حذف شد.`
+            );
+            await ctx.kickChatMember(userId);
+            return;
+        }
+    }
+    await next();
+});
+
+bot.command("add_ID", async (ctx) => {
+    const userId = ctx.from.id;
+    if (isOnCooldown(userId)) {
+        ctx.reply(`⏳ لطفاً کمی صبر کنید و سپس دوباره تلاش کنید.`);
+        return;
+    }
+    userCooldowns.set(userId, Date.now());
+
+    if (ctx.message.chat.id != groupID) {
+        ctx.reply(
+            "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
+        );
+        return;
+    }
+
+    if (!(await isAdminTalking(ctx))) {
+        try {
+            await ctx.telegram.callApi("setMessageReaction", {
+                chat_id: ctx.chat.id,
+                message_id: ctx.message.message_id,
+                reaction: [{ type: "emoji", emoji: "👀" }],
+            });
+        } catch (error) {
+            errorReply(ctx);
+        }
+        return;
+    }
+
+    if (!ctx.message.reply_to_message) {
+        sendIDKEmoji(ctx);
         return;
     }
 
@@ -131,7 +239,7 @@ bot.on("new_chat_members", async (ctx) => {
 
     if (ctx.message.new_chat_participant.is_bot) {
         const botInfo =
-            `🚫 ورود بات‌ها به گروه مجاز نیست! 🚫\n\n` +
+            `🚫 ورود بات‌ به گروه مجاز نیست! 🚫\n\n` +
             `<b>نام بات:</b> ${
                 ctx.message.new_chat_participant.first_name || "نامشخص"
             }\n` +
