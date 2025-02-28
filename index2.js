@@ -12,7 +12,7 @@ const userCooldowns = new Map();
 const userMessageCounts = new Map();
 const SPAM_THRESHOLD = 10;
 const SPAM_TIME_WINDOW = 10 * 1000;
-const COMMAND_COOLDOWN = 15 * 1000;
+const COMMAND_COOLDOWN = 2 * 1000;
 
 const AUTH = `Basic ${Buffer.from(`:${process.env.PAT_TOKEN}`).toString(
     "base64"
@@ -169,7 +169,11 @@ const isSpamming = (userId) => {
         userId,
         timestamps.filter((t) => now - t < SPAM_TIME_WINDOW)
     );
-    return timestamps.length > SPAM_THRESHOLD;
+
+    if (timestamps.length > SPAM_THRESHOLD) {
+        return true;
+    }
+    return false;
 };
 
 const isOnCooldown = (userId) => {
@@ -180,11 +184,21 @@ const isOnCooldown = (userId) => {
 bot.use(async (ctx, next) => {
     if (ctx.message && ctx.message.chat.id == groupID) {
         const userId = ctx.from.id;
+
+        if (
+            userMessageCounts.has(userId) &&
+            userMessageCounts.get(userId).banned
+        ) {
+            return;
+        }
+
         if (isSpamming(userId)) {
             ctx.reply(
                 `کاربر @${ctx.from.username} به دلیل ارسال پیام‌های زیاد به عنوان اسپم شناسایی شد و از گروه حذف شد.`
             );
+
             await ctx.kickChatMember(userId);
+            userMessageCounts.set(userId, { banned: true });
             return;
         }
     }
@@ -192,13 +206,6 @@ bot.use(async (ctx, next) => {
 });
 
 bot.command("add_ID", async (ctx) => {
-    const userId = ctx.from.id;
-    if (isOnCooldown(userId)) {
-        ctx.reply(`⏳ لطفاً کمی صبر کنید و سپس دوباره تلاش کنید.`);
-        return;
-    }
-    userCooldowns.set(userId, Date.now());
-
     if (ctx.message.chat.id != groupID) {
         ctx.reply(
             "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
@@ -218,6 +225,13 @@ bot.command("add_ID", async (ctx) => {
         }
         return;
     }
+
+    const userId = ctx.from.id;
+    if (isOnCooldown(userId)) {
+        ctx.reply(`⏳ لطفاً کمی صبر کنید و سپس دوباره تلاش کنید.`);
+        return;
+    }
+    userCooldowns.set(userId, Date.now());
 
     if (!ctx.message.reply_to_message) {
         sendIDKEmoji(ctx);
