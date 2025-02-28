@@ -6,13 +6,14 @@ const axios = require("axios");
 const ORGANIZATION = "cs-internship";
 const PROJECT = "CS Internship Program";
 const PARENT_ID = 30789;
-const workItemId = 31065;
-const groupID = "-1002368870938"; // Test group ID
-const userCooldowns = new Map();
-const userMessageCounts = new Map();
+const GROUPID = "-1002368870938"; // Test group ID
 const SPAM_THRESHOLD = 10;
 const SPAM_TIME_WINDOW = 10 * 1000;
 const COMMAND_COOLDOWN = 2 * 1000;
+
+const workItemId = 31256;
+const userCooldowns = new Map();
+const userMessageCounts = new Map();
 
 const AUTH = `Basic ${Buffer.from(`:${process.env.PAT_TOKEN}`).toString(
     "base64"
@@ -29,8 +30,6 @@ const createWorkItem = async (ctx, userData, isNewID) => {
     }
 
     try {
-        ctx.reply(`در حال دریافت اطلاعات Work Item ${workItemId}...`);
-
         const res = await axios.get(
             `https://dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/wit/workitems/${workItemId}?api-version=7.1-preview.3`,
             { headers: { Authorization: AUTH } }
@@ -82,20 +81,6 @@ const createWorkItem = async (ctx, userData, isNewID) => {
                 attributes: { isLocked: false, name: "Parent" },
             },
         });
-
-        ctx.reply("در حال ایجاد کلون جدید...");
-        const createRes = await axios.post(
-            `https://dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/wit/workitems/$Product%20Backlog%20Item?api-version=7.1-preview.3`,
-            payload,
-            {
-                headers: {
-                    "Content-Type": "application/json-patch+json",
-                    Authorization: AUTH,
-                },
-            }
-        );
-
-        ctx.reply(`کلون با موفقیت ایجاد شد! ID: ${createRes.data.id}`);
     } catch (error) {
         errorReply(ctx);
     } finally {
@@ -110,6 +95,31 @@ const createWorkItem = async (ctx, userData, isNewID) => {
         }
     }
 };
+
+setInterval(() => {
+    const now = Date.now();
+
+    for (const [userId, data] of userMessageCounts.entries()) {
+        if (data.banned) continue;
+
+        if (Array.isArray(data)) {
+            userMessageCounts.set(
+                userId,
+                data.filter((t) => now - t < SPAM_TIME_WINDOW)
+            );
+
+            if (userMessageCounts.get(userId).length === 0) {
+                userMessageCounts.delete(userId);
+            }
+        }
+    }
+
+    for (const [userId, lastUsed] of userCooldowns.entries()) {
+        if (now - lastUsed > COMMAND_COOLDOWN * 5) {
+            userCooldowns.delete(userId);
+        }
+    }
+}, 3 * 60 * 1000);
 
 const sendIDKEmoji = async (ctx) => {
     try {
@@ -146,7 +156,7 @@ const isAdminTalking = async (ctx) => {
 };
 
 bot.command("Aloha", async (ctx) => {
-    if (ctx.message.chat.id != groupID) {
+    if (ctx.message.chat.id != GROUPID) {
         ctx.reply(
             "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
         );
@@ -182,7 +192,7 @@ const isOnCooldown = (userId) => {
 };
 
 bot.use(async (ctx, next) => {
-    if (ctx.message && ctx.message.chat.id == groupID) {
+    if (ctx.message && ctx.message.chat.id == GROUPID) {
         const userId = ctx.from.id;
 
         if (
@@ -206,7 +216,7 @@ bot.use(async (ctx, next) => {
 });
 
 bot.command("add_ID", async (ctx) => {
-    if (ctx.message.chat.id != groupID) {
+    if (ctx.message.chat.id != GROUPID) {
         ctx.reply(
             "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
         );
@@ -238,13 +248,11 @@ bot.command("add_ID", async (ctx) => {
         return;
     }
 
-    ctx.reply("@" + ctx.message.reply_to_message.from.username);
-
     createWorkItem(ctx, ctx.message.reply_to_message.from, true);
 });
 
 bot.on("new_chat_members", async (ctx) => {
-    if (ctx.message.chat.id != groupID) {
+    if (ctx.message.chat.id != GROUPID) {
         ctx.reply(
             "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
         );
@@ -292,7 +300,7 @@ bot.on("new_chat_members", async (ctx) => {
     createWorkItem(ctx, ctx.message.new_chat_participant, false);
 });
 
-app.use(bot.webhookCallback("/bot"));
+// app.use(bot.webhookCallback("/bot"));
 app.listen(3000, () => {
     console.log("Express server running on port 3000");
 });
