@@ -53,11 +53,9 @@ const createWorkItem = async (ctx, userData, isNewID) => {
                 minute: "numeric",
                 second: "numeric",
                 hour12: false,
-            })}<br/></br><a href="https://t.me/${ctx.message.chat.username}/${
+            })}<br/></br><a href="https://t.me/c/1191433472/${
                 ctx.message.message_id
-            }">https://t.me/${ctx.message.chat.username}/${
-                ctx.message.message_id
-            }</a></div>`,
+            }">https://t.me/c/1191433472/${ctx.message.message_id}</a></div>`,
 
             "System.AreaPath": originalWorkItem.fields["System.AreaPath"],
             "System.IterationPath":
@@ -92,7 +90,6 @@ const createWorkItem = async (ctx, userData, isNewID) => {
                 },
             }
         );
-
     } catch (error) {
         errorReply(ctx);
     } finally {
