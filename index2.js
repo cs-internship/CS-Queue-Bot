@@ -81,6 +81,18 @@ const createWorkItem = async (ctx, userData, isNewID) => {
                 attributes: { isLocked: false, name: "Parent" },
             },
         });
+
+        await axios.post(
+            `https://dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/wit/workitems/$Product%20Backlog%20Item?api-version=7.1-preview.3`,
+            payload,
+            {
+                headers: {
+                    "Content-Type": "application/json-patch+json",
+                    Authorization: AUTH,
+                },
+            }
+        );
+
     } catch (error) {
         errorReply(ctx);
     } finally {
