@@ -6,7 +6,7 @@ const axios = require("axios");
 const ORGANIZATION = "cs-internship";
 const PROJECT = "CS Internship Program";
 const PARENT_ID = 30789;
-const GROUPID = "-1002368870938"; // Test group ID
+const GROUPID = "-1001191433472";
 const SPAM_THRESHOLD = 10;
 const SPAM_TIME_WINDOW = 10 * 1000;
 const COMMAND_COOLDOWN = 2 * 1000;
@@ -166,11 +166,6 @@ bot.command("Aloha", async (ctx) => {
     if (ctx.message.from.username) {
         ctx.reply(`Aloha :)\n\n@${ctx.message.from.username}\n@Ali_Sdg90`);
     }
-});
-
-bot.command("test", async (ctx) => {
-    console.log(ctx.message.chat.id);
-    ctx.reply(ctx.message.chat.id);
 });
 
 const isSpamming = (userId) => {
