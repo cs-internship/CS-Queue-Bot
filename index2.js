@@ -168,6 +168,11 @@ bot.command("Aloha", async (ctx) => {
     }
 });
 
+bot.command("test", async (ctx) => {
+    console.log(ctx.message.chat.id);
+    ctx.reply(ctx.message.chat.id);
+});
+
 const isSpamming = (userId) => {
     const now = Date.now();
     if (!userMessageCounts.has(userId)) {
