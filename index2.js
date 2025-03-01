@@ -314,6 +314,10 @@ bot.on("new_chat_members", async (ctx) => {
     createWorkItem(ctx, ctx.message.new_chat_participant, false);
 });
 
+app.get("/", (req, res) => {
+    res.send("Bot is running!");
+});
+
 // app.use(bot.webhookCallback("/bot"));
 app.listen(3000, () => {
     console.log("Express server running on port 3000");
