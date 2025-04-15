@@ -6,14 +6,17 @@ const axios = require("axios");
 const ORGANIZATION = "cs-internship";
 const PROJECT = "CS Internship Program";
 const PARENT_ID = 30789;
-const GROUPID = "-1002368870938"; // Test group ID
+const GROUPID = "-1002368870938";
 const SPAM_THRESHOLD = 10;
 const SPAM_TIME_WINDOW = 10 * 1000;
 const COMMAND_COOLDOWN = 2 * 1000;
 
+const adminGroupID = process.env.Admin_Group_ID;
+
 const workItemId = 31256;
 const userCooldowns = new Map();
 const userMessageCounts = new Map();
+const blockedUsers = new Set();
 
 const AUTH = `Basic ${Buffer.from(`:${process.env.PAT_TOKEN}`).toString(
     "base64"
@@ -164,6 +167,104 @@ const isAdminTalking = async (ctx) => {
     }
 };
 
+bot.command("version", async (ctx) => {
+    const username = ctx.from.username;
+
+    console.log(`User ${username} requested the version.`);
+
+    if (username === "Ali_Sdg90") {
+        ctx.reply("v2.1");
+    }
+});
+
+bot.on("message", async (ctx) => {
+    const chat = ctx.chat;
+    const user = ctx.from;
+
+    console.log(ctx.message);
+
+    if (chat.type === "private") {
+        if (blockedUsers.has(user.id)) {
+            console.log(`⛔️ Blocked user ${user.id} tried to send a message.`);
+            return;
+        }
+
+        if (isSpamming(user.id)) {
+            blockedUsers.add(user.id);
+
+            await ctx.telegram.sendMessage(
+                user.id,
+                "🚫 شما به دلیل ارسال بیش از حد پیام بلاک شده‌اید. از این به بعد پیام‌هایتان برای ادمین برنامه فرستاده نخواهد شد."
+            );
+
+            await ctx.telegram.sendMessage(
+                adminGroupID,
+                `🚫 کاربر ${user.first_name} با یوزرنیم @${
+                    user.username ?? "—"
+                } با آی‌دی ${user.id} به دلیل اسپم بلاک شد.`,
+                {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [
+                                {
+                                    text: "Unban User 🔓",
+                                    callback_data: `unban_${user.id}`,
+                                },
+                            ],
+                        ],
+                    },
+                }
+            );
+            return;
+        }
+
+        const messageText = ctx.message.text || "[non-text message]";
+        const now = new Date();
+        const timeString = now.toLocaleString("fa-IR", {
+            timeZone: "Asia/Tehran",
+            hour12: false,
+        });
+
+        await ctx.telegram.sendMessage(
+            adminGroupID,
+            `📥 پیام جدید در PV:\n\n🕒 ${timeString}\n👤 ${
+                user.first_name ?? ""
+            } ${user.last_name ?? ""} (@${user.username ?? "—"})\n🆔 ${
+                user.id
+            }\n\n📝 پیام:\n<code>${messageText}</code>`,
+            {
+                parse_mode: "HTML",
+            }
+        );
+    }
+});
+
+bot.on("callback_query", async (ctx) => {
+    const data = ctx.callbackQuery.data;
+
+    if (data.startsWith("unban_")) {
+        const userId = parseInt(data.split("_")[1]);
+
+        if (blockedUsers.has(userId)) {
+            blockedUsers.delete(userId);
+
+            await ctx.telegram.sendMessage(
+                adminGroupID,
+                `✅ کاربر ${userId} از بلاک خارج شد.`
+            );
+
+            await ctx.telegram.sendMessage(userId, "✅ شما از بلاک خارج شدید.");
+        } else {
+            await ctx.telegram.sendMessage(
+                adminGroupID,
+                `ℹ️ کاربر ${userId} در لیست بلاک نیست`
+            );
+        }
+
+        await ctx.telegram.answerCbQuery(ctx.callbackQuery.id, "✅ Done.");
+    }
+});
+
 bot.command("Aloha", async (ctx) => {
     if (ctx.message.chat.id != GROUPID) {
         ctx.reply(
@@ -175,11 +276,6 @@ bot.command("Aloha", async (ctx) => {
     if (ctx.message.from.username) {
         ctx.reply(`Aloha :)\n\n@${ctx.message.from.username}\n@Ali_Sdg90`);
     }
-});
-
-bot.command("test", async (ctx) => {
-    console.log(ctx.message.chat.id);
-    ctx.reply(ctx.message.chat.id);
 });
 
 const isSpamming = (userId) => {
