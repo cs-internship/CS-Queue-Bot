@@ -6,22 +6,23 @@ const axios = require("axios");
 const ORGANIZATION = "cs-internship";
 const PROJECT = "CS Internship Program";
 const PARENT_ID = 30789;
-const GROUPID = "-1002368870938";
+const WORKITEM_ID = 31256;
+
 const SPAM_THRESHOLD = 10;
 const SPAM_TIME_WINDOW = 10 * 1000;
 const COMMAND_COOLDOWN = 2 * 1000;
 
-const adminGroupID = process.env.Admin_Group_ID;
+const GROUP_ID = "-1002368870938";
+const ADMIN_GROUP_ID = process.env.Admin_Group_ID;
+const PAT = process.env.PAT_TOKEN;
 
-const workItemId = 31256;
+const BOT_VERSION = "v2.1";
+
 const userCooldowns = new Map();
 const userMessageCounts = new Map();
 const blockedUsers = new Set();
 
-const AUTH = `Basic ${Buffer.from(`:${process.env.PAT_TOKEN}`).toString(
-    "base64"
-)}`;
-
+const AUTH = `Basic ${Buffer.from(`:${PAT}`).toString("base64")}`;
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 const app = express();
 app.use(express.json());
@@ -34,7 +35,7 @@ const createWorkItem = async (ctx, userData, isNewID) => {
 
     try {
         const res = await axios.get(
-            `https://dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/wit/workitems/${workItemId}?api-version=7.1-preview.3`,
+            `https://dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/wit/workitems/${WORKITEM_ID}?api-version=7.1-preview.3`,
             { headers: { Authorization: AUTH } }
         );
 
@@ -167,21 +168,122 @@ const isAdminTalking = async (ctx) => {
     }
 };
 
-bot.command("version", async (ctx) => {
-    const username = ctx.from.username;
-
-    console.log(`User ${username} requested the version.`);
-
-    if (username === "Ali_Sdg90") {
-        ctx.reply("v2.1");
+bot.command("Version", async (ctx) => {
+    if (ctx.from.username === "Ali_Sdg90") {
+        ctx.reply(`🤖 Bot Version: ${BOT_VERSION}`);
+    } else {
+        try {
+            await ctx.telegram.callApi("setMessageReaction", {
+                chat_id: ctx.chat.id,
+                message_id: ctx.message.message_id,
+                reaction: [{ type: "emoji", emoji: "👀" }],
+            });
+        } catch (error) {
+            errorReply(ctx);
+        }
+        return;
     }
 });
 
-bot.on("message", async (ctx) => {
+bot.command("Ban", async (ctx) => {
+    const admin = ctx.from;
+
+    if (!ctx.message.reply_to_message) {
+        return ctx.reply(
+            "❗️ برای بلاک کردن، این دستور را روی پیام کاربر ریپلای کنید."
+        );
+    }
+
+    const repliedText = ctx.message.reply_to_message.text;
+
+    const idMatch = repliedText?.match(/🆔 (\d+)/);
+    if (!idMatch) {
+        return ctx.reply("❗️ آی‌دی کاربر در پیام ریپلای‌شده پیدا نشد.");
+    }
+
+    const targetUserId = parseInt(idMatch[1]);
+
+    if (isNaN(targetUserId)) {
+        return ctx.reply("❗️ آی‌دی معتبر نیست.");
+    }
+
+    if (blockedUsers.has(targetUserId)) {
+        return ctx.reply("ℹ️ این کاربر قبلاً بلاک شده است.");
+    }
+
+    blockedUsers.add(targetUserId);
+
+    try {
+        await ctx.telegram.sendMessage(
+            targetUserId,
+            "🚫 شما توسط ادمین بلاک شدید. دیگر پیام‌هایتان برای ادمین فرستاده نخواهد شد."
+        );
+    } catch (err) {
+        console.warn("❗️ ارسال پیام به کاربر ممکن نبود:", err.description);
+    }
+
+    await ctx.telegram.sendMessage(
+        ADMIN_GROUP_ID,
+        `🚫 کاربر با آی‌دی ${targetUserId} توسط @${admin.username} بلاک شد.\n\n#Ban`,
+        {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "🔓 رفع بلاک",
+                            callback_data: `unban_${targetUserId}`,
+                        },
+                    ],
+                ],
+            },
+        }
+    );
+
+    await ctx.reply("🚫 کاربر با موفقیت بلاک شد.");
+});
+
+bot.on("callback_query", async (ctx) => {
+    const data = ctx.callbackQuery.data;
+    const admin = ctx.from;
+
+    if (data.startsWith("unban_")) {
+        const userId = parseInt(data.split("_")[1]);
+
+        if (blockedUsers.has(userId)) {
+            blockedUsers.delete(userId);
+
+            try {
+                await ctx.telegram.sendMessage(
+                    userId,
+                    "✅ شما از بلاک خارج شدید."
+                );
+            } catch (err) {
+                console.warn(
+                    "❗️ ارسال پیام رفع بلاک به کاربر ممکن نبود:",
+                    err.description
+                );
+            }
+
+            await ctx.telegram.sendMessage(
+                ADMIN_GROUP_ID,
+                `✅ کاربر ${userId} توسط @${admin.username} از بلاک خارج شد.\n\n#Unblock`
+            );
+        } else {
+            await ctx.telegram.sendMessage(
+                ADMIN_GROUP_ID,
+                `ℹ️ کاربر ${userId} در لیست بلاک نبود.`
+            );
+        }
+
+        await ctx.telegram.answerCbQuery(ctx.callbackQuery.id, {
+            text: "✅ انجام شد.",
+        });
+    }
+});
+
+bot.on("message", async (ctx, next) => {
     const chat = ctx.chat;
     const user = ctx.from;
-
-    console.log(ctx.message);
 
     if (chat.type === "private") {
         if (blockedUsers.has(user.id)) {
@@ -194,31 +296,20 @@ bot.on("message", async (ctx) => {
 
             await ctx.telegram.sendMessage(
                 user.id,
-                "🚫 شما به دلیل ارسال بیش از حد پیام بلاک شده‌اید. از این به بعد پیام‌هایتان برای ادمین برنامه فرستاده نخواهد شد."
+                "🚫 شما به دلیل ارسال بیش از حد پیام بلاک شده‌اید. از این به بعد پیام‌هایتان برای ادمین فرستاده نخواهد شد."
             );
 
             await ctx.telegram.sendMessage(
-                adminGroupID,
+                ADMIN_GROUP_ID,
                 `🚫 کاربر ${user.first_name} با یوزرنیم @${
                     user.username ?? "—"
-                } با آی‌دی ${user.id} به دلیل اسپم بلاک شد.`,
-                {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                {
-                                    text: "Unban User 🔓",
-                                    callback_data: `unban_${user.id}`,
-                                },
-                            ],
-                        ],
-                    },
-                }
+                } با آی‌دی ${user.id} به دلیل اسپم بلاک شد.\n\n#SpamBlocked`
             );
+
             return;
         }
 
-        const messageText = ctx.message.text || "[non-text message]";
+        const messageText = ctx.message.text || "[پیام غیرمتنی]";
         const now = new Date();
         const timeString = now.toLocaleString("fa-IR", {
             timeZone: "Asia/Tehran",
@@ -226,47 +317,25 @@ bot.on("message", async (ctx) => {
         });
 
         await ctx.telegram.sendMessage(
-            adminGroupID,
+            ADMIN_GROUP_ID,
             `📥 پیام جدید در PV:\n\n🕒 ${timeString}\n👤 ${
                 user.first_name ?? ""
             } ${user.last_name ?? ""} (@${user.username ?? "—"})\n🆔 ${
                 user.id
-            }\n\n📝 پیام:\n<code>${messageText}</code>`,
+            }\n\n📝 پیام:\n\n<code>${messageText}</code>\n\n#PrivateMessage`,
             {
                 parse_mode: "HTML",
             }
         );
+
+        return;
     }
-});
 
-bot.on("callback_query", async (ctx) => {
-    const data = ctx.callbackQuery.data;
-
-    if (data.startsWith("unban_")) {
-        const userId = parseInt(data.split("_")[1]);
-
-        if (blockedUsers.has(userId)) {
-            blockedUsers.delete(userId);
-
-            await ctx.telegram.sendMessage(
-                adminGroupID,
-                `✅ کاربر ${userId} از بلاک خارج شد.`
-            );
-
-            await ctx.telegram.sendMessage(userId, "✅ شما از بلاک خارج شدید.");
-        } else {
-            await ctx.telegram.sendMessage(
-                adminGroupID,
-                `ℹ️ کاربر ${userId} در لیست بلاک نیست`
-            );
-        }
-
-        await ctx.telegram.answerCbQuery(ctx.callbackQuery.id, "✅ Done.");
-    }
+    await next();
 });
 
 bot.command("Aloha", async (ctx) => {
-    if (ctx.message.chat.id != GROUPID) {
+    if (ctx.message.chat.id != GROUP_ID) {
         ctx.reply(
             "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
         );
@@ -302,7 +371,7 @@ const isOnCooldown = (userId) => {
 };
 
 bot.use(async (ctx, next) => {
-    if (ctx.message && ctx.message.chat.id == GROUPID) {
+    if (ctx.message && ctx.message.chat.id == GROUP_ID) {
         const userId = ctx.from.id;
 
         if (
@@ -326,7 +395,7 @@ bot.use(async (ctx, next) => {
 });
 
 bot.command("add_ID", async (ctx) => {
-    if (ctx.message.chat.id != GROUPID) {
+    if (ctx.message.chat.id != GROUP_ID) {
         ctx.reply(
             "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
         );
@@ -362,7 +431,7 @@ bot.command("add_ID", async (ctx) => {
 });
 
 bot.on("new_chat_members", async (ctx) => {
-    if (ctx.message.chat.id != GROUPID) {
+    if (ctx.message.chat.id != GROUP_ID) {
         ctx.reply(
             "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
         );
