@@ -12,6 +12,7 @@ const app = express();
 app.use(express.json());
 
 // Register handlers
+require("./handlers/startMessage")(bot);
 require("./handlers/commands")(bot);
 require("./handlers/messages")(bot);
 require("./handlers/newMembers")(bot);
@@ -66,7 +67,7 @@ bot.catch(async (err, ctx) => {
     if (ctx?.telegram) {
         try {
             await ctx.telegram.sendMessage(
-                ADMIN_GROUP_ID,
+                config.ADMIN_GROUP_ID,
                 `⚠️ خطای غیرمنتظره در بات:\n\n<code>${err.message}</code>\n\n` +
                     `👤 کاربر: ${ctx.from?.first_name ?? "?"} (@${
                         ctx.from?.username ?? "—"
@@ -76,7 +77,7 @@ bot.catch(async (err, ctx) => {
             );
         } catch (sendErr) {
             console.warn(
-                "❗️ نتونستیم پیام خطا رو برای ادمین هم بفرستیم:",
+                "❗️ Failed to send the error message to the admin group:",
                 sendErr.message
             );
         }

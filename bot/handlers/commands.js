@@ -11,6 +11,13 @@ const {
 
 module.exports = function registerCommands(bot) {
     bot.command("Version", async (ctx) => {
+        if (ctx.message.chat.id != GROUP_ID) {
+            ctx.reply(
+                "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
+            );
+            return;
+        }
+
         if (ctx.from.username === "Ali_Sdg90") {
             ctx.reply(`🤖 Bot Version: ${BOT_VERSION}`);
         } else {
@@ -57,7 +64,27 @@ module.exports = function registerCommands(bot) {
         createWorkItem(ctx, ctx.message.reply_to_message.from, true);
     });
 
+    bot.command("Aloha", async (ctx) => {
+        if (ctx.message.chat.id != GROUP_ID) {
+            ctx.reply(
+                "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
+            );
+            return;
+        }
+
+        if (ctx.message.from.username) {
+            ctx.reply(`Aloha :)\n\n@${ctx.message.from.username}\n@Ali_Sdg90`);
+        }
+    });
+
     bot.command("Ban", async (ctx) => {
+        if (ctx.message.chat.id != GROUP_ID) {
+            ctx.reply(
+                "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
+            );
+            return;
+        }
+
         const admin = ctx.from;
 
         if (!ctx.message.reply_to_message) {

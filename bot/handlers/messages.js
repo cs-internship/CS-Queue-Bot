@@ -6,6 +6,10 @@ module.exports = function registerPrivateMessageHandler(bot) {
         const chat = ctx.chat;
         const user = ctx.from;
 
+        if (ctx.message.pinned_message !== undefined) {
+            return;
+        }
+
         if (chat.type === "private") {
             if (blockedUsers.has(user.id)) {
                 console.log(
@@ -46,7 +50,25 @@ module.exports = function registerPrivateMessageHandler(bot) {
                 return;
             }
 
-            const messageText = ctx.message.text || "[پیام غیرمتنی]";
+            const messageText =
+                ctx.message.text ||
+                `
+[پیام غیر متنی]
+
+چک کردن لاگ پیام:
+https://dashboard.render.com/web/srv-cu55kthu0jms73feuhi0/logs`;
+
+            if (!ctx.message.text) {
+                console.log(
+                    `⛔️ Non-text message from user ${user.id}:`,
+                    ctx.message
+                );
+            }
+
+            if (messageText[0] === "@") {
+                await ctx.reply("✅ یوزرنیم شما با موفقیت ثبت شد");
+            }
+
             const now = new Date();
             const timeString = now.toLocaleString("fa-IR", {
                 timeZone: "Asia/Tehran",
