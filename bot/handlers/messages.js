@@ -66,7 +66,7 @@ https://dashboard.render.com/web/srv-cu55kthu0jms73feuhi0/logs`;
             }
 
             if (messageText[0] === "@") {
-                await ctx.reply("✅ یوزرنیم شما با موفقیت ثبت شد");
+                await ctx.reply("✅ یوزرنیم شما با موفقیت ثبت شد.");
             }
 
             const now = new Date();

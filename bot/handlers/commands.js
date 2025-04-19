@@ -1,13 +1,13 @@
-const { isOnCooldown, setCooldown } = require("../utils/cooldown");
+// const { isOnCooldown, setCooldown } = require("../utils/cooldown");
 const { createWorkItem } = require("../services/azure");
 const { errorReply } = require("../utils/error");
 const {
     BOT_VERSION,
     GROUP_ID,
-    COMMAND_COOLDOWN,
     ADMIN_GROUP_ID,
     blockedUsers,
 } = require("../config");
+const { isAdminTalking } = require("../utils/adminChecker");
 
 module.exports = function registerCommands(bot) {
     bot.command("Version", async (ctx) => {
@@ -41,19 +41,12 @@ module.exports = function registerCommands(bot) {
             return;
         }
 
-        const userId = ctx.from.id;
-        if (isOnCooldown(userId, COMMAND_COOLDOWN)) {
-            ctx.reply(`⏳ لطفاً کمی صبر کنید و سپس دوباره تلاش کنید.`);
-            return;
-        }
-        setCooldown(userId);
-
-        if (!ctx.message.reply_to_message) {
+        if (!(await isAdminTalking(ctx))) {
             try {
                 await ctx.telegram.callApi("setMessageReaction", {
                     chat_id: ctx.chat.id,
                     message_id: ctx.message.message_id,
-                    reaction: [{ type: "emoji", emoji: "🤷‍♂️" }],
+                    reaction: [{ type: "emoji", emoji: "👀" }],
                 });
             } catch (error) {
                 errorReply(ctx);
@@ -82,6 +75,19 @@ module.exports = function registerCommands(bot) {
             ctx.reply(
                 "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
             );
+            return;
+        }
+
+        if (!(await isAdminTalking(ctx))) {
+            try {
+                await ctx.telegram.callApi("setMessageReaction", {
+                    chat_id: ctx.chat.id,
+                    message_id: ctx.message.message_id,
+                    reaction: [{ type: "emoji", emoji: "👀" }],
+                });
+            } catch (error) {
+                errorReply(ctx);
+            }
             return;
         }
 

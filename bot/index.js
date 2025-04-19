@@ -1,6 +1,7 @@
 const { Telegraf } = require("telegraf");
 const express = require("express");
 const config = require("./config");
+const { isSpamming } = require("./utils/spamProtection");
 
 if (!config.TELEGRAM_BOT_TOKEN) {
     console.error("❗️ TELEGRAM_BOT_TOKEN is not set.");
@@ -10,6 +11,30 @@ if (!config.TELEGRAM_BOT_TOKEN) {
 const bot = new Telegraf(config.TELEGRAM_BOT_TOKEN);
 const app = express();
 app.use(express.json());
+
+bot.use(async (ctx, next) => {
+    if (ctx.message && ctx.message.chat.id == config.GROUP_ID) {
+        const userId = ctx.from.id;
+
+        if (
+            config.userMessageCounts.has(userId) &&
+            config.userMessageCounts.get(userId).banned
+        ) {
+            return;
+        }
+
+        if (isSpamming(userId)) {
+            ctx.reply(
+                `کاربر @${ctx.from.username} به دلیل ارسال پیام‌های زیاد به عنوان اسپم شناسایی شد و از گروه حذف شد.`
+            );
+
+            await ctx.kickChatMember(userId);
+            config.userMessageCounts.set(userId, { banned: true });
+            return;
+        }
+    }
+    await next();
+});
 
 // Register handlers
 require("./handlers/startMessage")(bot);
@@ -35,44 +60,16 @@ bot.launch().then(() => {
 bot.catch(async (err, ctx) => {
     console.error("❗️Unhandled bot error:", err);
 
-    if (err?.response?.error_code === 429) {
-        const retryAfter = err.response.parameters?.retry_after ?? 120;
-
-        console.warn(`🚫 Rate limit! باید ${retryAfter} ثانیه صبر کنیم.`);
-
-        setTimeout(async () => {
-            try {
-                await ctx.telegram.sendMessage(
-                    config.ADMIN_GROUP_ID,
-                    `⚠️ خطای غیرمنتظره در بات (بعد از delay):\n\n<code>${err.message}</code>\n\n` +
-                        `👤 کاربر: ${ctx.from?.first_name ?? "?"} (@${
-                            ctx.from?.username ?? "—"
-                        })\n` +
-                        `🆔 ${
-                            ctx.from?.id ?? "?"
-                        }\n\nhttps://dashboard.render.com/web/srv-cu55kthu0jms73feuhi0/logs\n\n@Ali_Sdg90`,
-                    { parse_mode: "HTML" }
-                );
-            } catch (sendErr) {
-                console.warn(
-                    "❗️ حتی بعد از delay هم نتونستیم پیام خطا رو بفرستیم:",
-                    sendErr.message
-                );
-            }
-        }, retryAfter * 1000 + 5000);
-
-        return;
-    }
-
-    if (ctx?.telegram) {
+    const sendErrorToAdmin = async () => {
         try {
             await ctx.telegram.sendMessage(
                 config.ADMIN_GROUP_ID,
-                `⚠️ خطای غیرمنتظره در بات:\n\n<code>${err.message}</code>\n\n` +
+                `⚠️ خطای غیرمنتظره در بات (بعد از delay):\n\n<code>${err.message}</code>\n\n` +
                     `👤 کاربر: ${ctx.from?.first_name ?? "?"} (@${
                         ctx.from?.username ?? "—"
                     })\n` +
-                    `🆔 ${ctx.from?.id ?? "?"}`,
+                    `🆔 ${ctx.from?.id ?? "?"}\n\n` +
+                    `https://dashboard.render.com/web/srv-cu55kthu0jms73feuhi0/logs\n\n@Ali_Sdg90`,
                 { parse_mode: "HTML" }
             );
         } catch (sendErr) {
@@ -81,6 +78,19 @@ bot.catch(async (err, ctx) => {
                 sendErr.message
             );
         }
+    };
+
+    if (err?.response?.error_code === 429) {
+        const retryAfter = err.response.parameters?.retry_after ?? 120;
+
+        console.warn(`🚫 Rate limit! >> ${retryAfter}`);
+
+        setTimeout(sendErrorToAdmin, retryAfter * 1000 + 5000);
+        return;
+    }
+
+    if (ctx?.telegram) {
+        await sendErrorToAdmin();
     }
 });
 
