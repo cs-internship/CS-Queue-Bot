@@ -11,7 +11,7 @@ const isAdminTalking = async (ctx) => {
             return false;
         }
     } catch (error) {
-        errorReply(ctx);
+        errorReply(ctx, error);
         return false;
     }
 };

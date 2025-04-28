@@ -9,6 +9,20 @@ const {
 } = require("../config");
 const { isAdminTalking } = require("../utils/adminChecker");
 
+const sendIDKEmoji = async (ctx) => {
+    try {
+        await ctx.telegram.callApi("setMessageReaction", {
+            chat_id: ctx.chat.id,
+            message_id: ctx.message.message_id,
+            reaction: [{ type: "emoji", emoji: "🤷‍♂️" }],
+        });
+
+        throw new Error("No reply to message found.");
+    } catch (error) {
+        errorReply(ctx, error);
+    }
+};
+
 module.exports = function registerCommands(bot) {
     bot.command("Version", async (ctx) => {
         if (ctx.from.username === "Ali_Sdg90") {
@@ -21,7 +35,7 @@ module.exports = function registerCommands(bot) {
                     reaction: [{ type: "emoji", emoji: "👀" }],
                 });
             } catch (error) {
-                errorReply(ctx);
+                errorReply(ctx, error);
             }
         }
     });
@@ -42,8 +56,13 @@ module.exports = function registerCommands(bot) {
                     reaction: [{ type: "emoji", emoji: "👀" }],
                 });
             } catch (error) {
-                errorReply(ctx);
+                errorReply(ctx, error);
             }
+            return;
+        }
+
+        if (!ctx.message.reply_to_message) {
+            sendIDKEmoji(ctx);
             return;
         }
 
@@ -79,7 +98,7 @@ module.exports = function registerCommands(bot) {
                     reaction: [{ type: "emoji", emoji: "👀" }],
                 });
             } catch (error) {
-                errorReply(ctx);
+                errorReply(ctx, error);
             }
             return;
         }

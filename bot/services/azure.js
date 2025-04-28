@@ -10,7 +10,7 @@ const { errorReply } = require("../utils/error");
 
 const AUTH = `Basic ${Buffer.from(`:${PAT_TOKEN}`).toString("base64")}`;
 
-async function createWorkItem(ctx, userData, isNewID) {    
+async function createWorkItem(ctx, userData, isNewID) {
     if (!userData.username) {
         ctx.reply(`کاربر یوزرنیم ندارد! 🤖`);
         return;
@@ -30,7 +30,7 @@ async function createWorkItem(ctx, userData, isNewID) {
             "System.Description": `<div style="text-align: right;">تاریخ ورود به گروه: ${new Date(
                 ctx.message.date * 1000
             ).toLocaleString("fa-IR")}
-      <br/><a href="https://t.me/c/1191433472/${
+      <br/><br/><a href="https://t.me/c/1191433472/${
           ctx.message.message_id
       }">لینک پیام</a></div>`,
             "System.AreaPath": originalWorkItem.fields["System.AreaPath"],
@@ -76,8 +76,8 @@ async function createWorkItem(ctx, userData, isNewID) {
 
 موفق باشید🌱`);
         }
-    } catch (err) {
-        errorReply(ctx);
+    } catch (error) {
+        errorReply(ctx, error);
     }
 }
 

@@ -9,13 +9,13 @@ module.exports = function startMessage(bot) {
                         reaction: [{ type: "emoji", emoji: "👀" }],
                     });
                 } catch (error) {
-                    errorReply(ctx);
+                    errorReply(ctx, error);
                 }
                 return;
             }
 
             const sentMessage = await ctx.reply(
-                `سلام ${ctx.from.first_name} ${ctx.from.last_name} 
+                `سلام ${ctx.from.first_name || ""} ${ctx.from.last_name || ""} 
 
 برای ثبت و پیگیری حضور شما در جلسات پرسش‌وپاسخ برنامه‌ی CS Internship، لطفاً پیش از شروع جلساتی که در آن شرکت می‌کنید، یوزرنیم حساب تلگرام‌تان را از طریق پیام خصوصی برای بات ارسال کنید.
 

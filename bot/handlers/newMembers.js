@@ -41,7 +41,7 @@ module.exports = function registerNewMembersHandler(bot) {
             }
 
             if (!member.username) {
-                await ctx.reply(`سلام ${member.first_name}
+                await ctx.reply(`سلام ${member.first_name || ""}
 به گروه صف برنامه CS Internship خوش آمدید.
 
 لطفاً برای حساب کاربری تلگرام خود یک Username تنظیم کنید و پس از انجام این کار، در گروه اطلاع دهید.
@@ -67,7 +67,7 @@ module.exports = function registerNewMembersHandler(bot) {
             }
         } catch (error) {
             console.error("Error in new_chat_members handler:", error);
-            ctx.replyWithHTML("⛔ خطای سیستمی! لطفاً با پشتیبانی تماس بگیرید.");
+            ctx.replyWithHTML("⛔ خطای سیستمی!");
         }
     });
 };

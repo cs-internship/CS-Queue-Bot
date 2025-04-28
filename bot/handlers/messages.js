@@ -79,9 +79,11 @@ https://dashboard.render.com/web/srv-cu55kthu0jms73feuhi0/logs`;
                 ADMIN_GROUP_ID,
                 `📥 پیام جدید در PV:\n\n🕒 ${timeString}\n👤 ${
                     user.first_name ?? ""
-                } ${user.last_name ?? ""} (@${user.username ?? "—"})\n🆔 ${
+                } ${user.last_name ?? ""} (@${
+                    user.username ?? "—"
+                })\n🆔 <code>${
                     user.id
-                }\n\n📝 پیام:\n\n<code>${messageText}</code>\n\n#PrivateMessage`,
+                }</code>\n\n📝 پیام:\n\n<code>${messageText}</code>\n\n#PrivateMessage`,
                 {
                     parse_mode: "HTML",
                 }
