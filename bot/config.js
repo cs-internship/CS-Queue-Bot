@@ -10,7 +10,7 @@ module.exports = {
     PROJECT: "CS Internship Program",
     PARENT_ID: 30789,
     WORKITEM_ID: 31256,
-    BOT_VERSION: "v2.3",
+    BOT_VERSION: "v2.3.1",
     SPAM_THRESHOLD: 6,
     SPAM_TIME_WINDOW: 6 * 1000,
     COMMAND_COOLDOWN: 3 * 1000,
