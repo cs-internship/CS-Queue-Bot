@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { version } = require("./package.json");
 
 module.exports = {
     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
@@ -10,7 +11,7 @@ module.exports = {
     PROJECT: "CS Internship Program",
     PARENT_ID: 30789,
     WORKITEM_ID: 31256,
-    BOT_VERSION: "v2.3.1",
+    BOT_VERSION: `v${version}`,
     SPAM_THRESHOLD: 6,
     SPAM_TIME_WINDOW: 6 * 1000,
     COMMAND_COOLDOWN: 3 * 1000,
