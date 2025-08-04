@@ -104,23 +104,24 @@ CS-Queue-Bot/
 ├── .gitignore
 ├── .gitattributes
 ├── bot/
-│   ├── config.js            # Configuration and environment variables
-│   ├── index.js             # Main entry point, bot and server startup
-│   ├── package.json         # Project metadata and dependencies
-│   ├── .env                 # Environment variables (not committed)
-│   ├── handlers/            # Telegram event handlers
-│   │   ├── callback.js      # Handles inline button callbacks (e.g., unban)
-│   │   ├── commands.js      # All bot commands and admin actions
-│   │   ├── messages.js      # Private message and spam logic
-│   │   ├── newMembers.js    # New member onboarding and checks
-│   │   └── startMessage.js  # /start command logic
+│   ├── config.js              # Configuration and environment variables
+│   ├── index.js               # Main entry point, bot and server startup
+│   ├── package.json           # Project metadata and dependencies
+│   ├── .env                   # Environment variables (not committed)
+│   ├── handlers/              # Telegram event handlers
+│   │   ├── callback.js        # Handles inline button callbacks (e.g., unban)
+│   │   ├── commands.js        # All bot commands and admin actions
+│   │   ├── messages.js        # Private message and spam logic
+│   │   ├── newMembers.js      # New member onboarding and checks
+│   │   └── startMessage.js    # /start command logic
 │   ├── services/
-│   │   └── azure.js         # Azure DevOps integration logic
-│   └── utils/               # Utility/helper modules
-│       ├── adminChecker.js  # Admin check logic
-│       ├── cooldown.js      # Command cooldown management
-│       ├── error.js         # Error reporting and admin notification
-│       ├── spamProtection.js# Spam detection and user tracking
+│   │   └── azure.js           # Azure DevOps integration logic
+│   └── utils/                 # Utility/helper modules
+│       ├── adminChecker.js    # Admin check logic
+│       ├── cooldown.js        # Command cooldown management
+│       ├── error.js           # Error reporting and admin notification
+│       ├── spamProtection.js  # Spam detection and user tracking
+└── node_modules/              # Project dependencies (not committed)
 ```
 
 ## Contribution Guidelines
