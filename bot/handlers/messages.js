@@ -5,6 +5,7 @@ module.exports = function registerPrivateMessageHandler(bot) {
     bot.on("message", async (ctx, next) => {
         const chat = ctx.chat;
         const user = ctx.from;
+        let isValidUsername = false;
 
         if (ctx.message.pinned_message !== undefined) {
             return;
@@ -65,8 +66,18 @@ https://dashboard.render.com/web/srv-cu55kthu0jms73feuhi0/logs`;
                 );
             }
 
-            if (messageText[0] === "@") {
-                await ctx.reply("✅ یوزرنیم شما با موفقیت ثبت شد.");
+            if (messageText.startsWith("@") && messageText.length > 1) {
+                const username = messageText.slice(1);
+                const regex = /^[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
+
+                if (
+                    regex.test(username) &&
+                    !username.includes("__") &&
+                    !username.endsWith("_")
+                ) {
+                    await ctx.reply("✅ یوزرنیم شما با موفقیت ثبت شد.");
+                    isValidUsername = true;
+                }
             }
 
             const now = new Date();
@@ -81,9 +92,9 @@ https://dashboard.render.com/web/srv-cu55kthu0jms73feuhi0/logs`;
                     user.first_name ?? ""
                 } ${user.last_name ?? ""} (@${
                     user.username ?? "—"
-                })\n🆔 <code>${
-                    user.id
-                }</code>\n\n📝 پیام:\n\n<code>${messageText}</code>\n\n#PrivateMessage`,
+                })\n🆔 <code>${user.id}</code>\n\n📝 پیام:\n\n${
+                    isValidUsername ? "✅" : "❌"
+                } <code>${messageText}</code>\n\n#PrivateMessage`,
                 {
                     parse_mode: "HTML",
                 }
