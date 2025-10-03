@@ -5,7 +5,7 @@ const {
     WORKITEM_ID,
     PARENT_ID,
     PAT_TOKEN,
-} = require("../config");
+} = require("../config/config");
 const { errorReply } = require("../utils/error");
 
 const AUTH = `Basic ${Buffer.from(`:${PAT_TOKEN}`).toString("base64")}`;

@@ -1,7 +1,7 @@
 const { Telegraf } = require("telegraf");
 const express = require("express");
-const config = require("./config");
 const { isSpamming } = require("./utils/spamProtection");
+const config = require("./config/config");
 
 if (!config.TELEGRAM_BOT_TOKEN) {
     console.error("❗️ TELEGRAM_BOT_TOKEN is not set.");

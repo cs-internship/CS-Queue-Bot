@@ -1,4 +1,4 @@
-const { ADMIN_GROUP_ID, blockedUsers } = require("../config");
+const { ADMIN_GROUP_ID, blockedUsers } = require("../config/config");
 
 module.exports = function registerCallbackHandler(bot) {
     bot.on("callback_query", async (ctx) => {

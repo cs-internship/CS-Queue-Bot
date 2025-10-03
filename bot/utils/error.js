@@ -1,4 +1,4 @@
-const { ADMIN_GROUP_ID } = require("../config");
+const { ADMIN_GROUP_ID } = require("../config/config");
 
 const errorReply = async (ctx, error) => {
     await ctx.reply("خطایی رخ داده است! 🤖");

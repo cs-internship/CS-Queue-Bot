@@ -2,7 +2,7 @@ const {
     SPAM_TIME_WINDOW,
     SPAM_THRESHOLD,
     userMessageCounts,
-} = require("../config");
+} = require("../config/config");
 
 function isSpamming(userId) {
     const now = Date.now();

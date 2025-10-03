@@ -1,0 +1,30 @@
+{
+  "name": "cs-queue-bot",
+  "version": "2.4.0",
+  "description": "Automated Telegram bot for managing the CS Internship queue group, with Azure DevOps integration.",
+  "main": "./bot/index.js",
+  "scripts": {
+    "start": "node bot/index.js",
+    "dev": "nodemon bot/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint . --ext .js"
+  },
+  "keywords": ["telegram-bot", "cs-queue", "bot", "nodejs", "telegraf"],
+  "author": "Ali Sadeghi",
+  "contributors": ["Ali Sadeghi"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "axios": "^1.8.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "eslint": "^8.57.1",
+    "prettier": "^3.0.0"
+  }
+}

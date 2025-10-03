@@ -6,22 +6,8 @@ const {
     GROUP_ID,
     ADMIN_GROUP_ID,
     blockedUsers,
-} = require("../config");
+} = require("../config/config");
 const { isAdminTalking } = require("../utils/adminChecker");
-
-const sendIDKEmoji = async (ctx) => {
-    try {
-        await ctx.telegram.callApi("setMessageReaction", {
-            chat_id: ctx.chat.id,
-            message_id: ctx.message.message_id,
-            reaction: [{ type: "emoji", emoji: "🤷‍♂️" }],
-        });
-
-        throw new Error("No reply to message found.");
-    } catch (error) {
-        errorReply(ctx, error);
-    }
-};
 
 module.exports = function registerCommands(bot) {
     bot.command("Version", async (ctx) => {
@@ -62,7 +48,7 @@ module.exports = function registerCommands(bot) {
         }
 
         if (!ctx.message.reply_to_message) {
-            sendIDKEmoji(ctx);
+            sendIDKEmoji(ctx, "🤷‍♂️");
             return;
         }
 

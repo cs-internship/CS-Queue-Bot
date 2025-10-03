@@ -1,4 +1,4 @@
-const { GROUP_ID, BOT_VERSION } = require("../config");
+const { GROUP_ID, BOT_VERSION } = require("../config/config");
 const { createWorkItem } = require("../services/azure");
 
 module.exports = function registerNewMembersHandler(bot) {

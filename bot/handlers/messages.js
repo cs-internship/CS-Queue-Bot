@@ -1,4 +1,4 @@
-const { ADMIN_GROUP_ID, blockedUsers } = require("../config");
+const { ADMIN_GROUP_ID, blockedUsers } = require("../config/config");
 const { isSpamming } = require("../utils/spamProtection");
 
 module.exports = function registerPrivateMessageHandler(bot) {
