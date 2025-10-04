@@ -1,6 +1,7 @@
 const { ADMIN_GROUP_ID, blockedUsers } = require("../config/config");
 const { isAdminTalking } = require("../utils/adminChecker");
 const { groupValidator } = require("../utils/groupValidator");
+const { sendReaction } = require("../utils/sendReaction");
 
 const banCommand = async (ctx) => {
     if (!groupValidator(ctx)) {
@@ -9,6 +10,10 @@ const banCommand = async (ctx) => {
 
     if (!(await isAdminTalking(ctx))) {
         sendReaction(ctx, "👀");
+        return;
+    }
+
+    if (ctx.message.chat.id != ADMIN_GROUP_ID) {
         return;
     }
 

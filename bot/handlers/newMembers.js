@@ -1,5 +1,5 @@
-const { GROUP_ID } = require("../config/config");
 const { createWorkItem } = require("../services/azure");
+const { groupValidator } = require("../utils/groupValidator");
 
 module.exports = function registerNewMembersHandler(bot) {
     bot.on("new_chat_members", async (ctx) => {
