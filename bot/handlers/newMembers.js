@@ -1,13 +1,10 @@
-const { GROUP_ID, BOT_VERSION } = require("../config/config");
+const { GROUP_ID } = require("../config/config");
 const { createWorkItem } = require("../services/azure");
 
 module.exports = function registerNewMembersHandler(bot) {
     bot.on("new_chat_members", async (ctx) => {
         try {
-            if (ctx.message.chat.id.toString() !== GROUP_ID) {
-                ctx.replyWithHTML(
-                    "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
-                );
+            if (!groupValidator(ctx)) {
                 return;
             }
 

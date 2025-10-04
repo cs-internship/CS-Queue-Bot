@@ -1,4 +1,4 @@
-const { errorReply } = require("./error");
+const { errorReply } = require("./errorReply");
 
 const sendReaction = async (ctx, emoji) => {
     if (!ctx?.chat?.id || !ctx?.message?.message_id) {

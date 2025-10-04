@@ -1,16 +1,10 @@
+const { sendReaction } = require("../utils/sendReaction");
+
 module.exports = function startMessage(bot) {
     bot.start(async (ctx) => {
         try {
             if (ctx.chat.type !== "private") {
-                try {
-                    await ctx.telegram.callApi("setMessageReaction", {
-                        chat_id: ctx.chat.id,
-                        message_id: ctx.message.message_id,
-                        reaction: [{ type: "emoji", emoji: "👀" }],
-                    });
-                } catch (error) {
-                    errorReply(ctx, error);
-                }
+                sendReaction(ctx, "👀");
                 return;
             }
 

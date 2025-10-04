@@ -1,3 +1,5 @@
+const { errorReply } = require("./errorReply");
+
 const isAdminTalking = async (ctx) => {
     try {
         const member = await ctx.telegram.getChatMember(

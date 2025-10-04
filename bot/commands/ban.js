@@ -1,25 +1,14 @@
-const { ADMIN_GROUP_ID } = require("../config/config");
+const { ADMIN_GROUP_ID, blockedUsers } = require("../config/config");
 const { isAdminTalking } = require("../utils/adminChecker");
-const { errorReply } = require("../utils/error");
+const { groupValidator } = require("../utils/groupValidator");
 
-const ban = async (ctx) => {
-    if (ctx.message.chat.id != ADMIN_GROUP_ID) {
-        ctx.reply(
-            "سلام\nاین بات فقط در گروه صف برنامه CS Internship قابل استفاده است.\n\nhttps://t.me/+X_TxP_odRO5iOWFi"
-        );
+const banCommand = async (ctx) => {
+    if (!groupValidator(ctx)) {
         return;
     }
 
     if (!(await isAdminTalking(ctx))) {
-        try {
-            await ctx.telegram.callApi("setMessageReaction", {
-                chat_id: ctx.chat.id,
-                message_id: ctx.message.message_id,
-                reaction: [{ type: "emoji", emoji: "👀" }],
-            });
-        } catch (error) {
-            errorReply(ctx, error);
-        }
+        sendReaction(ctx, "👀");
         return;
     }
 
@@ -45,7 +34,7 @@ const ban = async (ctx) => {
     }
 
     if (blockedUsers.has(targetUserId)) {
-        return ctx.reply("ℹ️ این کاربر قبلاً بلاک شده است.");
+        return ctx.reply("ℹ️ این کاربر قبلاً بلاک شده است");
     }
 
     blockedUsers.add(targetUserId);
@@ -75,6 +64,6 @@ const ban = async (ctx) => {
             },
         }
     );
-
-    await ctx.reply("🚫 کاربر با موفقیت بلاک شد.");
 };
+
+module.exports = { banCommand };

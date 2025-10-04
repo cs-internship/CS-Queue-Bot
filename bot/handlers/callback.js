@@ -30,7 +30,7 @@ module.exports = function registerCallbackHandler(bot) {
             } else {
                 await ctx.telegram.sendMessage(
                     ADMIN_GROUP_ID,
-                    `ℹ️ کاربر ${userId} در لیست بلاک نبود.`
+                    `ℹ️ کاربر ${userId} در لیست بلاک نبود`
                 );
             }
 

@@ -6,7 +6,7 @@ const {
     PARENT_ID,
     PAT_TOKEN,
 } = require("../config/config");
-const { errorReply } = require("../utils/error");
+const { errorReply } = require("../utils/errorReply");
 
 const AUTH = `Basic ${Buffer.from(`:${PAT_TOKEN}`).toString("base64")}`;
 

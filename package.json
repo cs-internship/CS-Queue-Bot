@@ -1,11 +1,11 @@
 {
   "name": "cs-queue-bot",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "description": "Automated Telegram bot for managing the CS Internship queue group, with Azure DevOps integration.",
-  "main": "./bot/index.js",
+  "main": "./index.js",
   "scripts": {
-    "start": "node bot/index.js",
-    "dev": "nodemon bot/index.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .js"
   },
