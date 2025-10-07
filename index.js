@@ -2,6 +2,21 @@ const { bot } = require("./bot");
 const { startServer } = require("./bot/server");
 const config = require("./bot/config/config");
 
+console.log("Starting bot with the following configuration:");
+console.log({
+    BOT_VERSION: config.BOT_VERSION,
+    PORT: config.PORT,
+    GROUP_ID: config.GROUP_ID ? "SET" : "NOT SET",
+    ADMIN_GROUP_ID: config.ADMIN_GROUP_ID ? "SET" : "NOT SET",
+    ORGANIZATION: config.ORGANIZATION,
+    PROJECT: config.PROJECT,
+    PARENT_ID: config.PARENT_ID,
+    WORKITEM_ID: config.WORKITEM_ID,
+    startCalendarDate: config.startCalendarDate,
+    TELEGRAM_BOT_TOKEN: config.TELEGRAM_BOT_TOKEN ? "SET" : "NOT SET",
+    PAT_TOKEN: config.PAT_TOKEN ? "SET" : "NOT SET",
+});
+
 if (!config.TELEGRAM_BOT_TOKEN) {
     console.error("❗️ TELEGRAM_BOT_TOKEN is not set.");
     process.exit(1);
