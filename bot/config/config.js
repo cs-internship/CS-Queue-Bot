@@ -14,9 +14,10 @@ module.exports = {
     SPAM_THRESHOLD: 6,
     SPAM_TIME_WINDOW: 6 * 1000,
     COMMAND_COOLDOWN: 3 * 1000,
+    PORT: process.env.PORT || 3000,
     blockedUsers: new Set(),
     userMessageCounts: new Map(),
-    PORT: process.env.PORT || 3000,
+    startCalendarDate: "2025-01-13",
 };
 
 // Ensure that the environment variables are set

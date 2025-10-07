@@ -26,8 +26,10 @@
   },
   "dependencies": {
     "axios": "^1.8.1",
+    "dayjs": "^1.11.18",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "jalali-moment": "^3.3.11",
     "node-cron": "^4.2.1",
     "telegraf": "^4.16.3"
   },
