@@ -1,6 +1,15 @@
 require("dotenv").config();
 const { version } = require("../../package.json");
 
+console.log("Loading configuration...");
+console.log({
+    TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN ? "SET" : "NOT SET",
+    PAT_TOKEN: process.env.PAT_TOKEN ? "SET" : "NOT SET",
+    ADMIN_GROUP_ID: process.env.Admin_Group_ID,
+    GROUP_ID: process.env.Group_ID,
+    PORT: process.env.PORT,
+});
+
 module.exports = {
     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
     PAT_TOKEN: process.env.PAT_TOKEN,
