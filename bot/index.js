@@ -5,8 +5,6 @@ const { scheduleAdminMessage } = require("./utils/scheduleMessage");
 
 const bot = new Telegraf(config.TELEGRAM_BOT_TOKEN);
 
-console.log("bot is created");
-
 // Middlewares
 require("./middlewares/spamProtection")(bot);
 
