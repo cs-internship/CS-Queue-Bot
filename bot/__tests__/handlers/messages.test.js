@@ -1,3 +1,65 @@
+jest.resetModules();
+
+describe("messages handler", () => {
+    test("returns when pinned_message is present", async () => {
+        const bot = { on: jest.fn() };
+        const register = require("../../handlers/messages");
+        register(bot);
+
+        const handler = bot.on.mock.calls[0][1];
+        const ctx = { message: { pinned_message: {} } };
+        await handler(ctx, jest.fn());
+    });
+
+    test("handles non-private chat by calling next", async () => {
+        const bot = { on: jest.fn() };
+        const register = require("../../handlers/messages");
+        register(bot);
+
+        const handler = bot.on.mock.calls[0][1];
+        const next = jest.fn();
+        const ctx = { chat: { type: "group" }, message: {} };
+        await handler(ctx, next);
+        expect(next).toHaveBeenCalled();
+    });
+
+    test("handles blocked user in private chat", async () => {
+        const cfg = require("../../config/config");
+        cfg.blockedUsers.add(999);
+
+        const bot = { on: jest.fn() };
+        const register = require("../../handlers/messages");
+        register(bot);
+
+        const handler = bot.on.mock.calls[0][1];
+        const ctx = {
+            chat: { type: "private" },
+            from: { id: 999 },
+            message: {},
+        };
+        await handler(ctx, jest.fn());
+    });
+
+    test("detects and registers valid username", async () => {
+        const bot = { on: jest.fn() };
+        const register = require("../../handlers/messages");
+        register(bot);
+
+        const handler = bot.on.mock.calls[0][1];
+        const ctx = {
+            chat: { type: "private" },
+            from: { id: 5, first_name: "A", username: "u" },
+            message: { text: "@abcde" },
+            reply: jest.fn(),
+            telegram: { sendMessage: jest.fn().mockResolvedValue(true) },
+        };
+
+        await handler(ctx, jest.fn());
+
+        expect(ctx.reply).toHaveBeenCalled();
+        expect(ctx.telegram.sendMessage).toHaveBeenCalled();
+    });
+});
 describe("messages handler", () => {
     beforeEach(() => jest.resetModules());
 

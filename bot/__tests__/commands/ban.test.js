@@ -1,72 +1,206 @@
-describe("ban command", () => {
-    beforeEach(() => jest.resetModules());
+jest.resetModules();
 
-    test("returns when groupValidator false", async () => {
-        jest.mock("../../utils/groupValidator", () => ({
-            groupValidator: () => false,
-        }));
-        const { banCommand } = require("../../commands/ban");
-        await banCommand({ message: {} });
+describe("banCommand (isolated)", () => {
+    test("returns when groupValidator is false", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => false,
+            }));
+            jest.doMock("../../utils/errorReply", () => ({
+                errorReply: jest.fn(),
+            }));
+            const { banCommand } = require("../../commands/ban");
+            const ctx = {
+                message: { chat: { id: 1 } },
+                reply: jest.fn(),
+                telegram: { sendMessage: jest.fn() },
+            };
+            await banCommand(ctx);
+        });
     });
 
     test("sends reaction when not admin", async () => {
-        jest.mock("../../utils/groupValidator", () => ({
-            groupValidator: () => true,
-        }));
-        jest.mock("../../utils/adminChecker", () => ({
-            isAdminTalking: async () => false,
-        }));
-        const mockSend = jest.fn();
-        jest.mock("../../utils/sendReaction", () => ({ sendReaction: mockSend }));
+        await jest.isolateModulesAsync(async () => {
+            const mockSendReaction = jest.fn();
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            jest.doMock("../../utils/adminChecker", () => ({
+                isAdminTalking: async () => false,
+            }));
+            jest.doMock("../../utils/sendReaction", () => ({
+                sendReaction: mockSendReaction,
+            }));
+            jest.doMock("../../utils/errorReply", () => ({
+                errorReply: jest.fn(),
+            }));
 
-        const { banCommand } = require("../../commands/ban");
-        await banCommand({ message: {} });
-        expect(mockSend).toHaveBeenCalled();
+            const { banCommand } = require("../../commands/ban");
+            const ctx = {
+                message: { chat: { id: 12345 } },
+                reply: jest.fn(),
+                telegram: { sendMessage: jest.fn() },
+            };
+            await banCommand(ctx);
+
+            expect(mockSendReaction).toHaveBeenCalledWith(ctx, "👀");
+        });
     });
 
-    test("requires admin group id to proceed", async () => {
-        jest.mock("../../utils/groupValidator", () => ({
-            groupValidator: () => true,
-        }));
-        jest.mock("../../utils/adminChecker", () => ({
-            isAdminTalking: async () => true,
-        }));
-        jest.mock("../../config/config", () => ({
-            ADMIN_GROUP_ID: 999,
-            blockedUsers: new Set(),
-        }));
+    test("returns if chat isn't admin group", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            jest.doMock("../../utils/adminChecker", () => ({
+                isAdminTalking: async () => true,
+            }));
+            jest.doMock("../../config/config", () => ({
+                ADMIN_GROUP_ID: 999,
+                blockedUsers: new Set(),
+            }));
+            jest.doMock("../../utils/errorReply", () => ({
+                errorReply: jest.fn(),
+            }));
 
-        const { banCommand } = require("../../commands/ban");
-        const ctx = { message: { chat: { id: 1 } }, reply: jest.fn() };
-        await banCommand(ctx);
-        // should return early because chat id != ADMIN_GROUP_ID
+            const { banCommand } = require("../../commands/ban");
+            const ctx = {
+                message: { chat: { id: 1 } },
+                reply: jest.fn(),
+                telegram: { sendMessage: jest.fn() },
+            };
+            await banCommand(ctx);
+        });
     });
 
-    test("parses id and bans user successfully", async () => {
-        jest.mock("../../utils/groupValidator", () => ({
-            groupValidator: () => true,
-        }));
-        jest.mock("../../utils/adminChecker", () => ({
-            isAdminTalking: async () => true,
-        }));
-        jest.mock("../../config/config", () => ({
-            ADMIN_GROUP_ID: 1,
-            blockedUsers: new Set(),
-        }));
+    test("replies if no reply_to_message", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            jest.doMock("../../utils/adminChecker", () => ({
+                isAdminTalking: async () => true,
+            }));
+            jest.doMock("../../config/config", () => ({
+                ADMIN_GROUP_ID: 12345,
+                blockedUsers: new Set(),
+            }));
+            jest.doMock("../../utils/errorReply", () => ({
+                errorReply: jest.fn(),
+            }));
 
-        const ctx = {
-            message: { chat: { id: 1 }, reply_to_message: { text: "🆔 123" } },
-            from: { username: "adm" },
-            reply: jest.fn(),
-            telegram: { sendMessage: jest.fn().mockResolvedValue(true) },
-        };
+            const { banCommand } = require("../../commands/ban");
+            const ctx = {
+                message: { chat: { id: 12345 } },
+                reply: jest.fn(),
+                telegram: { sendMessage: jest.fn() },
+            };
+            await banCommand(ctx);
+            expect(ctx.reply).toHaveBeenCalled();
+        });
+    });
 
-        const { banCommand } = require("../../commands/ban");
-        // read mocked config to inspect the same Set instance
-        const config = require("../../config/config");
+    test("replies when id not found or invalid", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            jest.doMock("../../utils/adminChecker", () => ({
+                isAdminTalking: async () => true,
+            }));
+            jest.doMock("../../config/config", () => ({
+                ADMIN_GROUP_ID: 12345,
+                blockedUsers: new Set(),
+            }));
+            jest.doMock("../../utils/errorReply", () => ({
+                errorReply: jest.fn(),
+            }));
 
-        await banCommand(ctx);
-        expect(config.blockedUsers.has(123)).toBe(true);
-        expect(ctx.telegram.sendMessage).toHaveBeenCalled();
+            const { banCommand } = require("../../commands/ban");
+            const ctx = {
+                message: {
+                    chat: { id: 12345 },
+                    reply_to_message: { text: "no id here" },
+                },
+                reply: jest.fn(),
+                telegram: { sendMessage: jest.fn() },
+            };
+            await banCommand(ctx);
+            expect(ctx.reply).toHaveBeenCalled();
+        });
+    });
+
+    test("replies when already blocked", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            jest.doMock("../../utils/adminChecker", () => ({
+                isAdminTalking: async () => true,
+            }));
+            const blocked = new Set([42]);
+            jest.doMock("../../config/config", () => ({
+                ADMIN_GROUP_ID: 12345,
+                blockedUsers: blocked,
+            }));
+            jest.doMock("../../utils/errorReply", () => ({
+                errorReply: jest.fn(),
+            }));
+
+            const { banCommand } = require("../../commands/ban");
+            const ctx = {
+                message: {
+                    chat: { id: 12345 },
+                    reply_to_message: { text: "🆔 42" },
+                },
+                reply: jest.fn(),
+                telegram: { sendMessage: jest.fn() },
+            };
+            await banCommand(ctx);
+            expect(ctx.reply).toHaveBeenCalledWith(
+                "ℹ️ این کاربر قبلاً بلاک شده است"
+            );
+        });
+    });
+
+    test("successful ban flow sends messages and registers inline keyboard", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            jest.doMock("../../utils/adminChecker", () => ({
+                isAdminTalking: async () => true,
+            }));
+            const blocked = new Set();
+            jest.doMock("../../config/config", () => ({
+                ADMIN_GROUP_ID: 12345,
+                blockedUsers: blocked,
+            }));
+            jest.doMock("../../utils/errorReply", () => ({
+                errorReply: jest.fn(),
+            }));
+
+            const ctx = {
+                message: {
+                    chat: { id: 12345 },
+                    reply_to_message: { text: "🆔 777" },
+                },
+                from: { username: "adminUser" },
+                reply: jest.fn(),
+                telegram: { sendMessage: jest.fn().mockResolvedValue(true) },
+            };
+
+            const { banCommand } = require("../../commands/ban");
+            await banCommand(ctx);
+
+            expect(ctx.telegram.sendMessage).toHaveBeenCalled();
+            expect(blocked.has(777)).toBe(true);
+        });
     });
 });
+const ctx = {
+    message: { chat: { id: 12345 }, reply_to_message: { text: "🆔 777" } },
+    from: { username: "adminUser" },
+    reply: jest.fn(),
+    telegram: { sendMessage: jest.fn().mockResolvedValue(true) },
+};

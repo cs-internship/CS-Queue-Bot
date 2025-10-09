@@ -1,90 +1,117 @@
-describe("newMembers handler", () => {
-    beforeEach(() => jest.resetModules());
+jest.resetModules();
 
-    test("ignores when groupValidator returns false", async () => {
-        jest.mock("../../utils/groupValidator", () => ({
-            groupValidator: () => false,
-        }));
-        const bot = { on: jest.fn() };
-        require("../../handlers/newMembers")(bot);
-        const handler = bot.on.mock.calls[0][1];
-
-        const ctx = { message: { new_chat_participant: {} } };
-        await handler(ctx);
-        // should not throw and simply return
+describe("newMembers handler (isolated)", () => {
+    test("ignores when groupValidator false", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => false,
+            }));
+            const bot = { on: jest.fn() };
+            const register = require("../../handlers/newMembers");
+            register(bot);
+            const handler = bot.on.mock.calls[0][1];
+            await handler({ message: {} });
+        });
     });
 
-    test("handles bot join by replying and kicking", async () => {
-        jest.mock("../../utils/groupValidator", () => ({
-            groupValidator: () => true,
-        }));
-        const bot = { on: jest.fn() };
-        require("../../handlers/newMembers")(bot);
-        const handler = bot.on.mock.calls[0][1];
-
-        const member = {
-            is_bot: true,
-            id: 77,
-            first_name: "bot",
-            username: "bot",
-        };
-        const ctx = {
-            message: { new_chat_participant: member },
-            replyWithHTML: jest.fn().mockResolvedValue(true),
-            kickChatMember: jest.fn().mockResolvedValue(true),
-        };
-
-        await handler(ctx);
-        expect(ctx.replyWithHTML).toHaveBeenCalled();
-        expect(ctx.kickChatMember).toHaveBeenCalledWith(77);
+    test("handles invalid member object", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            const bot = { on: jest.fn() };
+            const register = require("../../handlers/newMembers");
+            register(bot);
+            const handler = bot.on.mock.calls[0][1];
+            await handler({ message: { new_chat_participant: null } });
+        });
     });
 
-    test("handles user without username by prompting", async () => {
-        jest.mock("../../utils/groupValidator", () => ({
-            groupValidator: () => true,
-        }));
-        const bot = { on: jest.fn() };
-        require("../../handlers/newMembers")(bot);
-        const handler = bot.on.mock.calls[0][1];
+    test("handles bot member by replying with HTML and kicking", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            const bot = { on: jest.fn() };
+            const register = require("../../handlers/newMembers");
+            register(bot);
+            const handler = bot.on.mock.calls[0][1];
 
-        const member = {
-            is_bot: false,
-            id: 88,
-            first_name: "NoName",
-            username: null,
-        };
-        const ctx = {
-            message: { new_chat_participant: member },
-            reply: jest.fn().mockResolvedValue(true),
-        };
+            const ctx = {
+                message: {
+                    new_chat_participant: {
+                        id: 2,
+                        is_bot: true,
+                        first_name: "bot",
+                        username: "b",
+                    },
+                },
+                replyWithHTML: jest.fn(),
+                kickChatMember: jest.fn().mockResolvedValue(true),
+            };
 
-        await handler(ctx);
-        expect(ctx.reply).toHaveBeenCalled();
+            await handler(ctx);
+
+            expect(ctx.replyWithHTML).toHaveBeenCalled();
+            expect(ctx.kickChatMember).toHaveBeenCalledWith(2);
+        });
     });
 
-    test("creates work item when username present and handles createWorkItem error", async () => {
-        jest.mock("../../utils/groupValidator", () => ({
-            groupValidator: () => true,
-        }));
-        const mockCreate = jest.fn().mockRejectedValue(new Error("ax"));
-        jest.mock("../../services/azure", () => ({ createWorkItem: mockCreate }));
+    test("handles member with no username by prompting", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            const bot = { on: jest.fn() };
+            const register = require("../../handlers/newMembers");
+            register(bot);
+            const handler = bot.on.mock.calls[0][1];
 
-        const bot = { on: jest.fn() };
-        require("../../handlers/newMembers")(bot);
-        const handler = bot.on.mock.calls[0][1];
+            const ctx = {
+                message: {
+                    new_chat_participant: {
+                        id: 3,
+                        first_name: "X",
+                        is_bot: false,
+                    },
+                },
+                reply: jest.fn(),
+            };
+            await handler(ctx);
 
-        const member = {
-            is_bot: false,
-            id: 99,
-            first_name: "Has",
-            username: "u99",
-        };
-        const ctx = {
-            message: { new_chat_participant: member },
-            reply: jest.fn().mockResolvedValue(true),
-        };
+            expect(ctx.reply).toHaveBeenCalled();
+        });
+    });
 
-        await handler(ctx);
-        expect(mockCreate).toHaveBeenCalled();
+    test("creates work item and handles createWorkItem failure", async () => {
+        await jest.isolateModulesAsync(async () => {
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            const mockCreate = jest.fn().mockRejectedValue(new Error("fail"));
+            jest.doMock("../../services/azure", () => ({
+                createWorkItem: mockCreate,
+            }));
+
+            const bot = { on: jest.fn() };
+            const register = require("../../handlers/newMembers");
+            register(bot);
+            const handler = bot.on.mock.calls[0][1];
+
+            const ctx = {
+                message: {
+                    new_chat_participant: {
+                        id: 4,
+                        first_name: "Y",
+                        is_bot: false,
+                        username: "u",
+                    },
+                },
+                reply: jest.fn(),
+            };
+
+            await handler(ctx);
+            expect(mockCreate).toHaveBeenCalled();
+        });
     });
 });

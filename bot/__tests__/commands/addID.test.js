@@ -1,28 +1,146 @@
-describe("addID command", () => {
-    beforeEach(() => jest.resetModules());
+jest.resetModules();
 
-    test("returns when groupValidator false", async () => {
-        jest.mock("../../utils/groupValidator", () => ({
-            groupValidator: () => false,
-        }));
-        const { addIDCommand } = require("../../commands/addID");
-        const ctx = { message: {} };
-        await addIDCommand(ctx); // should return without throwing
+describe("addIDCommand (isolated)", () => {
+    test("returns early when groupValidator is false", async () => {
+        await jest.isolateModulesAsync(async () => {
+            const mockCreateWorkItem = jest.fn();
+            const mockSendReaction = jest.fn();
+            const mockIsAdminTalking = jest.fn();
+
+            jest.doMock("../../config/config", () => ({
+                ADMIN_GROUP_ID: "-100123",
+                blockedUsers: new Set(),
+                userMessageCounts: new Map(),
+            }));
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => false,
+            }));
+            jest.doMock("../../utils/sendReaction", () => ({
+                sendReaction: mockSendReaction,
+            }));
+            jest.doMock("../../utils/adminChecker", () => ({
+                isAdminTalking: mockIsAdminTalking,
+            }));
+            jest.doMock("../../services/azure", () => ({
+                createWorkItem: mockCreateWorkItem,
+            }));
+
+            const { addIDCommand } = require("../../commands/addID");
+
+            const ctx = { chat: { id: 1 }, message: {}, reply: jest.fn() };
+            await addIDCommand(ctx);
+
+            expect(mockCreateWorkItem).not.toHaveBeenCalled();
+        });
     });
 
-    test("sends reaction if not admin", async () => {
-        jest.mock("../../utils/groupValidator", () => ({
-            groupValidator: () => true,
-        }));
-        jest.mock("../../utils/adminChecker", () => ({
-            isAdminTalking: async () => false,
-        }));
-        const mockSend = jest.fn();
-        jest.mock("../../utils/sendReaction", () => ({ sendReaction: mockSend }));
+    test("reacts when caller is not admin", async () => {
+        await jest.isolateModulesAsync(async () => {
+            const mockCreateWorkItem = jest.fn();
+            const mockSendReaction = jest.fn();
+            const mockIsAdminTalking = jest.fn().mockResolvedValue(false);
 
-        const { addIDCommand } = require("../../commands/addID");
-        const ctx = { message: {} };
-        await addIDCommand(ctx);
-        expect(mockSend).toHaveBeenCalled();
+            jest.doMock("../../config/config", () => ({
+                ADMIN_GROUP_ID: "-100123",
+                blockedUsers: new Set(),
+                userMessageCounts: new Map(),
+            }));
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            jest.doMock("../../utils/sendReaction", () => ({
+                sendReaction: mockSendReaction,
+            }));
+            jest.doMock("../../utils/adminChecker", () => ({
+                isAdminTalking: mockIsAdminTalking,
+            }));
+            jest.doMock("../../services/azure", () => ({
+                createWorkItem: mockCreateWorkItem,
+            }));
+
+            const { addIDCommand } = require("../../commands/addID");
+            const ctx = { chat: { id: 1 }, message: {}, reply: jest.fn() };
+
+            await addIDCommand(ctx);
+
+            expect(mockSendReaction).toHaveBeenCalledWith(ctx, "👀");
+            expect(mockCreateWorkItem).not.toHaveBeenCalled();
+        });
+    });
+
+    test("reacts when no reply_to_message", async () => {
+        await jest.isolateModulesAsync(async () => {
+            const mockCreateWorkItem = jest.fn();
+            const mockSendReaction = jest.fn();
+            const mockIsAdminTalking = jest.fn().mockResolvedValue(true);
+
+            jest.doMock("../../config/config", () => ({
+                ADMIN_GROUP_ID: "-100123",
+                blockedUsers: new Set(),
+                userMessageCounts: new Map(),
+            }));
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            jest.doMock("../../utils/sendReaction", () => ({
+                sendReaction: mockSendReaction,
+            }));
+            jest.doMock("../../utils/adminChecker", () => ({
+                isAdminTalking: mockIsAdminTalking,
+            }));
+            jest.doMock("../../services/azure", () => ({
+                createWorkItem: mockCreateWorkItem,
+            }));
+
+            const { addIDCommand } = require("../../commands/addID");
+            const ctx = { chat: { id: 1 }, message: {}, reply: jest.fn() };
+
+            await addIDCommand(ctx);
+
+            expect(mockSendReaction).toHaveBeenCalledWith(ctx, "🤷‍♂️");
+            expect(mockCreateWorkItem).not.toHaveBeenCalled();
+        });
+    });
+
+    test("calls createWorkItem when admin and reply_to_message exists", async () => {
+        await jest.isolateModulesAsync(async () => {
+            const mockCreateWorkItem = jest.fn();
+            const mockSendReaction = jest.fn();
+            const mockIsAdminTalking = jest.fn().mockResolvedValue(true);
+
+            jest.doMock("../../config/config", () => ({
+                ADMIN_GROUP_ID: "-100123",
+                blockedUsers: new Set(),
+                userMessageCounts: new Map(),
+            }));
+            jest.doMock("../../utils/groupValidator", () => ({
+                groupValidator: () => true,
+            }));
+            jest.doMock("../../utils/sendReaction", () => ({
+                sendReaction: mockSendReaction,
+            }));
+            jest.doMock("../../utils/adminChecker", () => ({
+                isAdminTalking: mockIsAdminTalking,
+            }));
+            jest.doMock("../../services/azure", () => ({
+                createWorkItem: mockCreateWorkItem,
+            }));
+
+            const { addIDCommand } = require("../../commands/addID");
+            const repliedUser = { id: 555, username: "test" };
+            const ctx = {
+                chat: { id: 1 },
+                message: { reply_to_message: { from: repliedUser } },
+                reply: jest.fn(),
+            };
+
+            await addIDCommand(ctx);
+
+            expect(mockCreateWorkItem).toHaveBeenCalledWith(
+                ctx,
+                repliedUser,
+                true
+            );
+        });
     });
 });
