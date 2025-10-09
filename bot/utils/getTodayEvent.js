@@ -47,4 +47,4 @@ const getTodayEvent = () => {
     };
 };
 
-module.exports = { getTodayEvent };
+module.exports = { getTodayEvent, getEventForDate };
