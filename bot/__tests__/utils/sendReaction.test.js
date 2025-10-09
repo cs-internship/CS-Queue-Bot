@@ -10,17 +10,17 @@ describe("sendReaction util", () => {
             message: { message_id: 2 },
             telegram: { callApi },
         };
-        const { sendReaction } = require("../utils/sendReaction");
+        const { sendReaction } = require("../../utils/sendReaction");
         await sendReaction(ctx, "👍");
         expect(callApi).toHaveBeenCalled();
     });
 
     test("calls errorReply when ctx invalid", async () => {
         const mockErrorReply = jest.fn();
-        jest.mock("../utils/errorReply", () => ({
+        jest.mock("../../utils/errorReply", () => ({
             errorReply: mockErrorReply,
         }));
-        const { sendReaction } = require("../utils/sendReaction");
+        const { sendReaction } = require("../../utils/sendReaction");
 
         const ctx = {}; // invalid
         await sendReaction(ctx, "👍");
@@ -29,7 +29,7 @@ describe("sendReaction util", () => {
 
     test("calls errorReply when callApi throws", async () => {
         const mockErrorReply = jest.fn();
-        jest.mock("../utils/errorReply", () => ({
+        jest.mock("../../utils/errorReply", () => ({
             errorReply: mockErrorReply,
         }));
 
@@ -39,7 +39,7 @@ describe("sendReaction util", () => {
             message: { message_id: 2 },
             telegram: { callApi },
         };
-        const { sendReaction } = require("../utils/sendReaction");
+        const { sendReaction } = require("../../utils/sendReaction");
 
         await sendReaction(ctx, "👍");
         expect(mockErrorReply).toHaveBeenCalled();
