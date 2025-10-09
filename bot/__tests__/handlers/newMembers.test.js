@@ -2,11 +2,11 @@ describe("newMembers handler", () => {
     beforeEach(() => jest.resetModules());
 
     test("ignores when groupValidator returns false", async () => {
-        jest.mock("../utils/groupValidator", () => ({
+        jest.mock("../../utils/groupValidator", () => ({
             groupValidator: () => false,
         }));
         const bot = { on: jest.fn() };
-        require("../handlers/newMembers")(bot);
+        require("../../handlers/newMembers")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = { message: { new_chat_participant: {} } };
@@ -15,11 +15,11 @@ describe("newMembers handler", () => {
     });
 
     test("handles bot join by replying and kicking", async () => {
-        jest.mock("../utils/groupValidator", () => ({
+        jest.mock("../../utils/groupValidator", () => ({
             groupValidator: () => true,
         }));
         const bot = { on: jest.fn() };
-        require("../handlers/newMembers")(bot);
+        require("../../handlers/newMembers")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const member = {
@@ -40,11 +40,11 @@ describe("newMembers handler", () => {
     });
 
     test("handles user without username by prompting", async () => {
-        jest.mock("../utils/groupValidator", () => ({
+        jest.mock("../../utils/groupValidator", () => ({
             groupValidator: () => true,
         }));
         const bot = { on: jest.fn() };
-        require("../handlers/newMembers")(bot);
+        require("../../handlers/newMembers")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const member = {
@@ -63,14 +63,14 @@ describe("newMembers handler", () => {
     });
 
     test("creates work item when username present and handles createWorkItem error", async () => {
-        jest.mock("../utils/groupValidator", () => ({
+        jest.mock("../../utils/groupValidator", () => ({
             groupValidator: () => true,
         }));
         const mockCreate = jest.fn().mockRejectedValue(new Error("ax"));
-        jest.mock("../services/azure", () => ({ createWorkItem: mockCreate }));
+        jest.mock("../../services/azure", () => ({ createWorkItem: mockCreate }));
 
         const bot = { on: jest.fn() };
-        require("../handlers/newMembers")(bot);
+        require("../../handlers/newMembers")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const member = {

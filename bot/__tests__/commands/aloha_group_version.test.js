@@ -2,10 +2,10 @@ describe("aloha and groupId and version commands", () => {
     beforeEach(() => jest.resetModules());
 
     test("aloha replies when in group and has username", async () => {
-        jest.mock("../utils/groupValidator", () => ({
+        jest.mock("../../utils/groupValidator", () => ({
             groupValidator: () => true,
         }));
-        const { alohaCommand } = require("../commands/aloha");
+        const { alohaCommand } = require("../../commands/aloha");
         const ctx = {
             message: { from: { username: "xname" } },
             reply: jest.fn(),
@@ -15,7 +15,7 @@ describe("aloha and groupId and version commands", () => {
     });
 
     test("groupID replies with chat id", async () => {
-        const { groupIDCommand } = require("../commands/groupId");
+        const { groupIDCommand } = require("../../commands/groupId");
         const ctx = { chat: { id: 123 }, reply: jest.fn() };
         await groupIDCommand(ctx);
         expect(ctx.reply).toHaveBeenCalled();
@@ -24,11 +24,11 @@ describe("aloha and groupId and version commands", () => {
     test("version replies to owner and reacts for others", async () => {
         jest.mock("../../config/config", () => ({ BOT_VERSION: "1.2.3" }));
         const mockSendReaction = jest.fn();
-        jest.mock("../utils/sendReaction", () => ({
+        jest.mock("../../utils/sendReaction", () => ({
             sendReaction: mockSendReaction,
         }));
 
-        const { versionCommand } = require("../commands/version");
+        const { versionCommand } = require("../../commands/version");
         const ctxOwner = { from: { username: "Ali_Sdg90" }, reply: jest.fn() };
         await versionCommand(ctxOwner);
         expect(ctxOwner.reply).toHaveBeenCalled();

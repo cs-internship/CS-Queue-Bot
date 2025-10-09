@@ -27,7 +27,7 @@ describe("errorReply util", () => {
         const error = new Error("Something went wrong");
 
         // Require after mocking
-        const { errorReply } = require("../utils/errorReply");
+        const { errorReply } = require("../../utils/errorReply");
 
         await errorReply(ctx, error);
 
@@ -53,7 +53,7 @@ describe("errorReply util", () => {
             response: { error_code: 400, description: "Bad Request" },
         };
 
-        const { errorReply } = require("../utils/errorReply");
+        const { errorReply } = require("../../utils/errorReply");
 
         await errorReply(ctx, error);
 
@@ -65,7 +65,7 @@ describe("errorReply util", () => {
     test("handles unknown error object", async () => {
         const error = { foo: "bar" };
 
-        const { errorReply } = require("../utils/errorReply");
+        const { errorReply } = require("../../utils/errorReply");
 
         await errorReply(ctx, error);
 
@@ -79,7 +79,7 @@ describe("errorReply util", () => {
         ctx.chat = undefined;
         ctx.from = undefined;
 
-        const { errorReply } = require("../utils/errorReply");
+        const { errorReply } = require("../../utils/errorReply");
 
         await errorReply(ctx, error);
 
@@ -105,7 +105,7 @@ describe("errorReply util", () => {
                 telegram: { sendMessage: mockSendMessage },
             };
 
-            const { errorReply } = require("../utils/errorReply");
+            const { errorReply } = require("../../utils/errorReply");
 
             await errorReply(ctx, new Error("Test Error"));
 

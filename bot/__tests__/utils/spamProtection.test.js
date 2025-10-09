@@ -12,7 +12,7 @@ describe("spamProtection util", () => {
         const {
             isSpamming,
             userMessageCounts,
-        } = require("../utils/spamProtection");
+        } = require("../../utils/spamProtection");
         const userId = "u1";
         // ensure clean
         userMessageCounts.clear();
@@ -29,7 +29,7 @@ describe("spamProtection util", () => {
         const {
             isSpamming,
             userMessageCounts,
-        } = require("../utils/spamProtection");
+        } = require("../../utils/spamProtection");
         const userId = "u2";
         userMessageCounts.clear();
 

@@ -3,7 +3,7 @@ describe("messages handler", () => {
 
     test("returns early for pinned_message", () => {
         const bot = { on: jest.fn() };
-        require("../handlers/messages")(bot);
+        require("../../handlers/messages")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = { message: { pinned_message: {} } };
@@ -15,12 +15,12 @@ describe("messages handler", () => {
             ADMIN_GROUP_ID: 999,
             blockedUsers: new Set(),
         }));
-        jest.mock("../utils/spamProtection", () => ({
+        jest.mock("../../utils/spamProtection", () => ({
             isSpamming: jest.fn().mockReturnValue(false),
         }));
 
         const bot = { on: jest.fn() };
-        require("../handlers/messages")(bot);
+        require("../../handlers/messages")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = {
@@ -44,12 +44,12 @@ describe("messages handler", () => {
             ADMIN_GROUP_ID: 999,
             blockedUsers: new Set(),
         }));
-        jest.mock("../utils/spamProtection", () => ({
+        jest.mock("../../utils/spamProtection", () => ({
             isSpamming: jest.fn().mockReturnValue(false),
         }));
 
         const bot = { on: jest.fn() };
-        require("../handlers/messages")(bot);
+        require("../../handlers/messages")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = {

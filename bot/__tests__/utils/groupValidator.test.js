@@ -13,7 +13,7 @@ describe("groupValidator util", () => {
         // Mock config
         jest.mock("../../config/config", () => mockConfig);
 
-        const { groupValidator } = require("../utils/groupValidator");
+        const { groupValidator } = require("../../utils/groupValidator");
 
         ctx = { message: { chat: { id: 999 } }, reply: mockReply };
 
@@ -32,7 +32,7 @@ describe("groupValidator util", () => {
     ])("returns true when chat id is allowed: %o", ({ chatId, expected }) => {
         jest.mock("../../config/config", () => mockConfig);
 
-        const { groupValidator } = require("../utils/groupValidator");
+        const { groupValidator } = require("../../utils/groupValidator");
 
         ctx = { message: { chat: { id: chatId } } };
         expect(groupValidator(ctx)).toBe(expected);
@@ -43,12 +43,12 @@ describe("groupValidator util", () => {
         jest.mock("../../config/config", () => mockConfig);
 
         // Mock errorReply
-        jest.mock("../utils/errorReply", () => ({
+        jest.mock("../../utils/errorReply", () => ({
             errorReply: jest.fn(),
         }));
 
-        const { groupValidator } = require("../utils/groupValidator");
-        const { errorReply } = require("../utils/errorReply");
+        const { groupValidator } = require("../../utils/groupValidator");
+        const { errorReply } = require("../../utils/errorReply");
 
         ctx = {}; // malformed ctx
 

@@ -15,7 +15,7 @@ describe("getTodayEvent util", () => {
             { title: "D" },
         ]);
 
-        const { getTodayEvent } = require("../utils/getTodayEvent");
+        const { getTodayEvent } = require("../../utils/getTodayEvent");
         const res = getTodayEvent();
         expect(res.hasEvent).toBe(false);
     });
@@ -38,7 +38,7 @@ describe("getTodayEvent util", () => {
             { title: "D" },
         ]);
 
-        const { getTodayEvent } = require("../utils/getTodayEvent");
+        const { getTodayEvent } = require("../../utils/getTodayEvent");
         const res = getTodayEvent();
 
         expect(res.hasEvent).toBe(true);
@@ -60,7 +60,7 @@ describe("getTodayEvent util", () => {
         const moment = require("jalali-moment");
         const target = moment("2025-09-30", "YYYY-MM-DD"); // Tuesday
 
-        const { getEventForDate } = require("../utils/getTodayEvent");
+        const { getEventForDate } = require("../../utils/getTodayEvent");
         const event = getEventForDate(target);
         expect(event.title).toMatch(/Tuesday/);
     });
@@ -80,7 +80,7 @@ describe("getTodayEvent util", () => {
         const moment = require("jalali-moment");
         const target = moment("2025-09-28", "YYYY-MM-DD"); // Sunday
 
-        const { getEventForDate } = require("../utils/getTodayEvent");
+        const { getEventForDate } = require("../../utils/getTodayEvent");
         const event = getEventForDate(target);
         expect(event.title).toMatch(/Sunday/);
     });
@@ -100,7 +100,7 @@ describe("getTodayEvent util", () => {
         const moment = require("jalali-moment");
         const target = moment("2025-10-01", "YYYY-MM-DD"); // Thursday
 
-        const { getEventForDate } = require("../utils/getTodayEvent");
+        const { getEventForDate } = require("../../utils/getTodayEvent");
         const event = getEventForDate(target);
         expect(event).toBe(null);
     });

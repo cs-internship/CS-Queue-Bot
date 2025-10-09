@@ -8,7 +8,7 @@ describe("callback handler", () => {
         }));
 
         const bot = { on: jest.fn() };
-        require("../handlers/callback")(bot);
+        require("../../handlers/callback")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = {
@@ -32,7 +32,7 @@ describe("callback handler", () => {
         }));
 
         const bot = { on: jest.fn() };
-        require("../handlers/callback")(bot);
+        require("../../handlers/callback")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = {
