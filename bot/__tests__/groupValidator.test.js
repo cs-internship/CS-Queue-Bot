@@ -1,16 +1,18 @@
 describe("groupValidator util", () => {
     let mockReply, ctx;
 
+    const mockConfig = { GROUP_ID: 10, ADMIN_GROUP_ID: 20 };
+
     beforeEach(() => {
         jest.resetModules();
         jest.clearAllMocks();
         mockReply = jest.fn();
     });
 
-    const mockConfig = { GROUP_ID: 10, ADMIN_GROUP_ID: 20 };
-
     test("returns false and replies when chat id not allowed", () => {
+        // Mock config
         jest.mock("../config/config", () => mockConfig);
+
         const { groupValidator } = require("../utils/groupValidator");
 
         ctx = { message: { chat: { id: 999 } }, reply: mockReply };
@@ -29,6 +31,7 @@ describe("groupValidator util", () => {
         { chatId: mockConfig.ADMIN_GROUP_ID, expected: true },
     ])("returns true when chat id is allowed: %o", ({ chatId, expected }) => {
         jest.mock("../config/config", () => mockConfig);
+
         const { groupValidator } = require("../utils/groupValidator");
 
         ctx = { message: { chat: { id: chatId } } };
@@ -36,40 +39,22 @@ describe("groupValidator util", () => {
     });
 
     test("calls errorReply and returns false when ctx is malformed", () => {
+        // Mock config
         jest.mock("../config/config", () => mockConfig);
-        const { groupValidator } = require("../utils/groupValidator");
 
         // Mock errorReply
-        const mockErrorReply = jest.fn();
         jest.mock("../utils/errorReply", () => ({
-            errorReply: mockErrorReply,
+            errorReply: jest.fn(),
         }));
 
-        ctx = {}; // ctx malformed
+        const { groupValidator } = require("../utils/groupValidator");
+        const { errorReply } = require("../utils/errorReply");
+
+        ctx = {}; // malformed ctx
 
         const result = groupValidator(ctx);
+
         expect(result).toBe(false);
-        expect(mockErrorReply).toHaveBeenCalled();
-    });
-
-    test("calls errorReply and returns false when ctx is malformed", () => {
-        jest.mock("../config/config", () => ({
-            GROUP_ID: 10,
-            ADMIN_GROUP_ID: 20,
-        }));
-
-        // Mock errorReply
-        const mockErrorReply = jest.fn();
-        jest.mock("../utils/errorReply", () => ({
-            errorReply: mockErrorReply,
-        }));
-
-        const { groupValidator } = require("../utils/groupValidator");
-
-        const ctx = {}; 
-        const result = groupValidator(ctx);
-
-        expect(result).toBe(false); 
-        expect(mockErrorReply).toHaveBeenCalled();
+        expect(errorReply).toHaveBeenCalled();
     });
 });

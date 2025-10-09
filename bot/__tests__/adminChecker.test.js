@@ -1,12 +1,17 @@
 describe("adminChecker util", () => {
+    let mockErrorReply;
+
     beforeEach(() => {
         jest.resetModules();
         jest.clearAllMocks();
+
+        mockErrorReply = jest.fn();
     });
 
     test("returns true for administrator and creator statuses", async () => {
-        jest.mock("../utils/errorReply", () => ({ errorReply: jest.fn() }));
-
+        jest.mock("../utils/errorReply", () => ({
+            errorReply: mockErrorReply,
+        }));
         const { isAdminTalking } = require("../utils/adminChecker");
 
         const ctx = {
@@ -23,7 +28,9 @@ describe("adminChecker util", () => {
     });
 
     test("returns false for non-admin status", async () => {
-        jest.mock("../utils/errorReply", () => ({ errorReply: jest.fn() }));
+        jest.mock("../utils/errorReply", () => ({
+            errorReply: mockErrorReply,
+        }));
         const { isAdminTalking } = require("../utils/adminChecker");
 
         const ctx = {
@@ -40,7 +47,6 @@ describe("adminChecker util", () => {
     });
 
     test("on error calls errorReply and returns false", async () => {
-        const mockErrorReply = jest.fn();
         jest.mock("../utils/errorReply", () => ({
             errorReply: mockErrorReply,
         }));
@@ -55,6 +61,6 @@ describe("adminChecker util", () => {
         };
 
         await expect(isAdminTalking(ctx)).resolves.toBe(false);
-        expect(mockErrorReply).toHaveBeenCalled();
+        expect(mockErrorReply).toHaveBeenCalledWith(ctx, expect.any(Error));
     });
 });
