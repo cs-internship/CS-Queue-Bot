@@ -4,35 +4,34 @@ An automated Telegram bot designed to manage the CS Internship Program queue gro
 
 ![photo_2025-08-05_00-41-50](https://github.com/user-attachments/assets/abba91a6-9b22-42ab-b5c9-1718fbe7ae20)
 
-
 ## Project Overview
 
 **CS-Queue-Bot** is a Node.js-based Telegram bot built to streamline the management of the CS Internship Program's queue group. It automates new member onboarding, enforces anti-spam measures, provides admin tools, and integrates with Azure DevOps to efficiently track candidate progress and activity.
 
 ## Features
 
--   **Automated Onboarding:** Welcomes new members, checks for required usernames, and guides them through the process.
--   **Spam Protection:** Detects and blocks users who send excessive messages in a short period.
--   **Admin Commands:** Includes commands for version checking, user management (ban/unban), and adding users to the Azure DevOps queue.
--   **Azure DevOps Integration:** Automatically creates and links work items for new users in Azure DevOps.
--   **Error Handling & Logging:** Notifies admins of errors and provides links to logs for debugging.
--   **Express Health Check:** Exposes a simple HTTP endpoint for deployment health monitoring.
+- **Automated Onboarding:** Welcomes new members, checks for required usernames, and guides them through the process.
+- **Spam Protection:** Detects and blocks users who send excessive messages in a short period.
+- **Admin Commands:** Includes commands for version checking, user management (ban/unban), and adding users to the Azure DevOps queue.
+- **Azure DevOps Integration:** Automatically creates and links work items for new users in Azure DevOps.
+- **Error Handling & Logging:** Notifies admins of errors and provides links to logs for debugging.
+- **Express Health Check:** Exposes a simple HTTP endpoint for deployment health monitoring.
 
 ## Technologies Used
 
--   **Node.js** — JavaScript runtime for server-side logic
--   **Telegraf** — Modern Telegram Bot Framework for Node.js
--   **Express** — Lightweight web server for health checks and deployment
--   **Axios** — Promise-based HTTP client for API requests (Azure DevOps)
--   **dotenv** — Loads environment variables from `.env` files
--   **Azure DevOps REST API** — For work item and candidate management
+- **Node.js** — JavaScript runtime for server-side logic
+- **Telegraf** — Modern Telegram Bot Framework for Node.js
+- **Express** — Lightweight web server for health checks and deployment
+- **Axios** — Promise-based HTTP client for API requests (Azure DevOps)
+- **dotenv** — Loads environment variables from `.env` files
+- **Azure DevOps REST API** — For work item and candidate management
 
 ## Installation Instructions
 
 ### Prerequisites
 
--   Node.js (v16 or higher recommended)
--   npm (Node package manager)
+- Node.js (v16 or higher recommended)
+- npm (Node package manager)
 
 ### Steps
 
@@ -65,12 +64,11 @@ Create a `.env` file in the `bot/` directory with the following variables:
 
 **Other configuration values** (set in `config.js`):
 
--   `GROUP_ID`: Main group chat ID
--   `ORGANIZATION`: Azure DevOps organization name
--   `PROJECT`: Azure DevOps project name
--   `PARENT_ID`, `WORKITEM_ID`: Work item IDs for Azure DevOps integration
--   `SPAM_THRESHOLD`, `SPAM_TIME_WINDOW`: Anti-spam settings
-
+- `GROUP_ID`: Main group chat ID
+- `ORGANIZATION`: Azure DevOps organization name
+- `PROJECT`: Azure DevOps project name
+- `PARENT_ID`, `WORKITEM_ID`: Work item IDs for Azure DevOps integration
+- `SPAM_THRESHOLD`, `SPAM_TIME_WINDOW`: Anti-spam settings
 
 ## Bot Commands
 
@@ -86,14 +84,14 @@ Below is a complete list of available bot commands, with details on their usage 
 
 **Other Bot Behaviors:**
 
--   **Spam Protection:** If a user sends too many messages in a short time, they are automatically blocked and notified. Admins are alerted with an option to unblock.
--   **New Member Onboarding:** When a new user joins, the bot:
-    -   Welcomes them
-    -   Checks for a username
-    -   Guides them to set a username if missing
-    -   Registers them in Azure DevOps if eligible
--   **Unban via Inline Button:** Admins can unblock users via an inline button in the admin group.
--   **Error Handling:** All errors are reported to the admin group with details and log links.
+- **Spam Protection:** If a user sends too many messages in a short time, they are automatically blocked and notified. Admins are alerted with an option to unblock.
+- **New Member Onboarding:** When a new user joins, the bot:
+    - Welcomes them
+    - Checks for a username
+    - Guides them to set a username if missing
+    - Registers them in Azure DevOps if eligible
+- **Unban via Inline Button:** Admins can unblock users via an inline button in the admin group.
+- **Error Handling:** All errors are reported to the admin group with details and log links.
 
 ## Folder/File Structure
 

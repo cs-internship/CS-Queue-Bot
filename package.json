@@ -1,41 +1,45 @@
 {
-  "name": "cs-queue-bot",
-  "version": "3.0.3",
-  "description": "Automated Telegram bot for managing the CS Internship queue group, with Azure DevOps integration.",
-  "main": "./index.js",
-  "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint . --ext .js"
-  },
-  "keywords": [
-    "telegram-bot",
-    "cs-queue",
-    "bot",
-    "nodejs",
-    "telegraf"
-  ],
-  "author": "Ali Sadeghi",
-  "contributors": [
-    "Ali Sadeghi"
-  ],
-  "license": "MIT",
-  "engines": {
-    "node": ">=18"
-  },
-  "dependencies": {
-    "axios": "^1.8.1",
-    "dayjs": "^1.11.18",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "jalali-moment": "^3.3.11",
-    "node-cron": "^4.2.1",
-    "telegraf": "^4.16.3"
-  },
-  "devDependencies": {
-    "eslint": "^8.57.1",
-    "nodemon": "^3.0.2",
-    "prettier": "^3.0.0"
-  }
+    "name": "cs-queue-bot",
+    "version": "3.1.0",
+    "description": "Automated Telegram bot for managing the CS Internship queue group, with Azure DevOps integration.",
+    "main": "./index.js",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js",
+        "test": "jest --coverage",
+        "test:watch": "jest --watch",
+        "lint": "eslint . --ext .js"
+    },
+    "keywords": [
+        "telegram-bot",
+        "cs-queue",
+        "bot",
+        "nodejs",
+        "telegraf"
+    ],
+    "author": "Ali Sadeghi",
+    "contributors": [
+        "Ali Sadeghi"
+    ],
+    "license": "MIT",
+    "engines": {
+        "node": ">=18"
+    },
+    "dependencies": {
+        "axios": "^1.8.1",
+        "dayjs": "^1.11.18",
+        "dotenv": "^16.4.7",
+        "express": "^4.21.2",
+        "jalali-moment": "^3.3.11",
+        "node-cron": "^4.2.1",
+        "telegraf": "^4.16.3"
+    },
+    "devDependencies": {
+        "eslint": "^8.57.1",
+        "nodemon": "^3.0.2",
+        "prettier": "^3.0.0",
+        "jest": "^29.6.1",
+        "@babel/preset-env": "^7.22.20",
+        "babel-jest": "^29.6.1"
+    }
 }
