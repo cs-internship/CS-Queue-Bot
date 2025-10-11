@@ -1,7 +1,12 @@
 jest.resetModules();
 
 describe("spamProtection middleware", () => {
-    it("kicks and replies when isSpamming returns true", async () => {
+    beforeEach(() => {
+        jest.resetModules();
+        jest.clearAllMocks();
+    });
+
+    test("kicks and replies when isSpamming returns true", async () => {
         const mockIsSpamming = jest.fn().mockReturnValue(true);
         jest.doMock("../../utils/spamProtection", () => ({
             isSpamming: mockIsSpamming,
@@ -36,7 +41,28 @@ describe("spamProtection middleware", () => {
         expect(next).not.toHaveBeenCalled();
     });
 
-    it("calls next when not spamming", async () => {
+    test("spamProtection returns early when user already banned", async () => {
+        const bot = { use: (fn) => (bot._middleware = fn) };
+        jest.doMock("../../config/config", () => ({
+            GROUP_ID: 1,
+            userMessageCounts: new Map([[7, { banned: true }]]),
+        }));
+        jest.doMock("../../utils/spamProtection", () => ({
+            isSpamming: () => false,
+        }));
+        const spam = require("../../middlewares/spamProtection");
+        await spam(bot);
+
+        const ctx = { message: { chat: { id: 1 } }, from: { id: 7 } };
+        let calledNext = false;
+        await bot._middleware(ctx, () => {
+            calledNext = true;
+        });
+        // should not call next when banned
+        expect(calledNext).toBe(false);
+    });
+
+    test("calls next when not spamming", async () => {
         jest.resetModules();
         jest.doMock("../../utils/spamProtection", () => ({
             isSpamming: () => false,

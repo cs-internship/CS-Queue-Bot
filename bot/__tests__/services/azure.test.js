@@ -30,17 +30,15 @@ describe("createWorkItem service", () => {
 
     test("calls axios.get and axios.post and replies when isNewID true", async () => {
         await jest.isolateModulesAsync(async () => {
-            const mockGet = jest
-                .fn()
-                .mockResolvedValue({
-                    data: {
-                        fields: {
-                            "System.AreaPath": "A",
-                            "System.IterationPath": "I",
-                            "Microsoft.VSTS.Common.Priority": 1,
-                        },
+            const mockGet = jest.fn().mockResolvedValue({
+                data: {
+                    fields: {
+                        "System.AreaPath": "A",
+                        "System.IterationPath": "I",
+                        "Microsoft.VSTS.Common.Priority": 1,
                     },
-                });
+                },
+            });
             const mockPost = jest.fn().mockResolvedValue({});
             jest.doMock("axios", () => ({ get: mockGet, post: mockPost }));
             jest.doMock("../../config/config", () => ({
@@ -72,18 +70,94 @@ describe("createWorkItem service", () => {
         });
     });
 
-    test("calls errorReply when axios.post throws", async () => {
+    test("createWorkItem returns early when user has no username", async () => {
         await jest.isolateModulesAsync(async () => {
-            const mockGet = jest
-                .fn()
-                .mockResolvedValue({
+            const { createWorkItem } = require("../../services/azure");
+
+            const ctx = {
+                reply: jest.fn(),
+                message: { date: Date.now() / 1000, message_id: 1 },
+            };
+            const user = { id: 1, first_name: "A" };
+
+            await createWorkItem(ctx, user, false);
+
+            expect(ctx.reply).toHaveBeenCalledWith(
+                expect.stringContaining("کاربر یوزرنیم ندارد")
+            );
+        });
+    });
+
+    test("createWorkItem replies when isNewID true after POST", async () => {
+        await jest.isolateModulesAsync(async () => {
+            const axios = require("axios");
+            jest.doMock("axios", () => ({
+                get: jest.fn().mockResolvedValue({
                     data: {
                         fields: {
                             "System.AreaPath": "A",
                             "System.IterationPath": "I",
                         },
                     },
-                });
+                }),
+                post: jest.fn().mockResolvedValue({}),
+            }));
+
+            const { createWorkItem } = require("../../services/azure");
+
+            const ctx = {
+                reply: jest.fn(),
+                message: { date: 1600000000, message_id: 2 },
+            };
+            const user = {
+                id: 2,
+                username: "u2",
+                first_name: "F",
+                last_name: "L",
+            };
+
+            await createWorkItem(ctx, user, true);
+
+            expect(ctx.reply).toHaveBeenCalledWith(
+                expect.stringContaining("یوزرنیم شما ثبت شد")
+            );
+        });
+    });
+
+    test("createWorkItem handles axios.get error and calls errorReply", async () => {
+        await jest.isolateModulesAsync(async () => {
+            const mockErrorReply = jest.fn();
+            jest.doMock("../../utils/errorReply", () => ({
+                errorReply: mockErrorReply,
+            }));
+            jest.doMock("axios", () => ({
+                get: jest.fn().mockRejectedValue(new Error("network")),
+            }));
+
+            const { createWorkItem } = require("../../services/azure");
+
+            const ctx = {
+                reply: jest.fn(),
+                message: { date: 1600000000, message_id: 3 },
+            };
+            const user = { id: 3, username: "u3" };
+
+            await createWorkItem(ctx, user, false);
+
+            expect(mockErrorReply).toHaveBeenCalledWith(ctx, expect.any(Error));
+        });
+    });
+
+    test("calls errorReply when axios.post throws", async () => {
+        await jest.isolateModulesAsync(async () => {
+            const mockGet = jest.fn().mockResolvedValue({
+                data: {
+                    fields: {
+                        "System.AreaPath": "A",
+                        "System.IterationPath": "I",
+                    },
+                },
+            });
             const postErr = new Error("post failed");
             const mockPost = jest.fn().mockRejectedValue(postErr);
             jest.doMock("axios", () => ({ get: mockGet, post: mockPost }));

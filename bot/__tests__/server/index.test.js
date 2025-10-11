@@ -1,7 +1,7 @@
 jest.resetModules();
 
 describe("startServer", () => {
-    it("registers GET / and calls listen", () => {
+    test("registers GET / and calls listen", () => {
         const mockUse = jest.fn();
         const capturedHandlers = [];
         const mockGet = jest.fn((path, handler) => {

@@ -1,7 +1,14 @@
 const registerCommands = require("../../commands/registerCommands");
 
 describe("registerCommands", () => {
-    it("registers expected commands on the bot", () => {
+    beforeEach(() => {
+        jest.resetModules();
+        jest.clearAllMocks();
+
+        mockErrorReply = jest.fn();
+    });
+
+    test("registers expected commands on the bot", () => {
         const bot = { command: jest.fn() };
 
         registerCommands(bot);

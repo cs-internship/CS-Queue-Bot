@@ -1,6 +1,11 @@
 jest.resetModules();
 
 describe("addIDCommand (isolated)", () => {
+    beforeEach(() => {
+        jest.resetModules();
+        jest.clearAllMocks();
+    });
+
     test("returns early when groupValidator is false", async () => {
         await jest.isolateModulesAsync(async () => {
             const mockCreateWorkItem = jest.fn();
