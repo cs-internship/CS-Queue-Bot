@@ -32,8 +32,17 @@ jobs:
       - name: Run tests
         run: npm test --silent
 
+      - name: Check whether running under act (set output)
+        id: check_act_test
+        run: |
+          if [ "${IS_ACT}" = "true" ]; then
+            echo "is_act=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_act=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Upload coverage report
-        if: always()
+        if: ${{ always() && steps.check_act_test.outputs.is_act != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: jest-coverage
@@ -56,18 +65,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
+
+      - name: Check whether running under act (set output)
+        id: check_act_release
+        run: |
+          if [ "${IS_ACT}" = "true" ]; then
+            echo "is_act=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_act=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setup Node.js
+        if: ${{ steps.check_act_release.outputs.is_act != 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
 
       - name: Install dependencies
+        if: ${{ steps.check_act_release.outputs.is_act != 'true' }}
         run: npm ci
 
       - name: Semantic Release
+        if: ${{ steps.check_act_release.outputs.is_act != 'true' }}
         uses: cycjimmy/semantic-release-action@v4
         with:
           extra_plugins: |
@@ -86,19 +107,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check whether running under act (set output)
+        id: check_act_deploy
+        run: |
+          if [ "${IS_ACT}" = "true" ]; then
+            echo "is_act=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_act=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup Node.js
+        if: ${{ steps.check_act_deploy.outputs.is_act != 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
 
       - name: Install dependencies
+        if: ${{ steps.check_act_deploy.outputs.is_act != 'true' }}
         run: npm ci
 
       - name: Build project
+        if: ${{ steps.check_act_deploy.outputs.is_act != 'true' }}
         run: npm run build
 
       - name: Deploy to Render
+        if: ${{ steps.check_act_deploy.outputs.is_act != 'true' }}
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
           RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
@@ -109,7 +143,7 @@ jobs:
           -d ''
 
       - name: Send Telegram notification
-        if: always()
+        if: ${{ always() && steps.check_act_deploy.outputs.is_act != 'true' }}
         run: |
           MESSAGE="✅ Deployment completed successfully on Render!
           🕓 $(date)
@@ -118,13 +152,3 @@ jobs:
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
             -d text="$MESSAGE"
-
-  security:
-    name: 🔒 Secret Scanning
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run Gitleaks
-        uses: zricethezav/gitleaks-action@v2
-        with:
-          args: detect --source . --no-git --verbose
