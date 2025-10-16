@@ -1,5 +1,7 @@
 # CS-Queue-Bot
 
+![CI/CD](https://github.com/cs-internship/CS-Queue-Bot/actions/workflows/ci.yml/badge.svg)
+
 An automated Telegram bot designed to manage the CS Internship Program queue group. It streamlines onboarding, prevents spam, simplifies admin tasks, and integrates seamlessly with Azure DevOps to track candidates and manage group operations efficiently.
 
 ![photo_2025-08-05_00-41-50](https://github.com/user-attachments/assets/abba91a6-9b22-42ab-b5c9-1718fbe7ae20)
