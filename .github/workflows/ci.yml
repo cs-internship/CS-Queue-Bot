@@ -141,9 +141,10 @@ jobs:
       - name: Send Telegram notification
         if: ${{ always() && steps.check_act_deploy.outputs.is_act != 'true' }}
         run: |
+          VERSION=$(git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD)
           MESSAGE="✅ Deployment completed successfully on Render!
           🕓 $(date)
-          🏷️ Version: $(git describe --tags --abbrev=0)
+          🏷️ Version: $VERSION
           🔗 Repo: $GITHUB_REPOSITORY"
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
