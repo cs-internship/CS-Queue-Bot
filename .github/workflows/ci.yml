@@ -96,7 +96,7 @@ jobs:
             @semantic-release/git
             @semantic-release/github
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
   deploy:
     name: 📦 Deploy to Render
@@ -141,26 +141,29 @@ jobs:
           -d ''
 
       - name: Send Telegram notification
-        if: ${{ always() && steps.check_act_deploy.outputs.is_act != 'true' }}
+        if: always()
         run: |
           VERSION=$(git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD)
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
           COMMIT=$(git rev-parse --short HEAD)
           REPO_URL="https://github.com/$GITHUB_REPOSITORY"
           LAST_AUTHOR=$(git log -1 --pretty=format:'%an')
-          LAST_COMMIT_MSG=$(git log -1 --pretty=format:'%s')
               
-          MESSAGE="✅ Deployment completed successfully on Render!
-          🕓 $(date)
-          🏷️ Version/Tag: $VERSION
-          🌿 Branch: $BRANCH
-          🔀 Commit: $COMMIT
-          👤 Last Commit Author: $LAST_AUTHOR
-          💬 Last Commit Msg: $LAST_COMMIT_MSG
-          🔗 Repo: $REPO_URL"
+          if [ "${{ job.status }}" = "success" ]; then
+            STATUS="✅ *Deployment succeeded*"
+          else
+            STATUS="❌ *Deployment failed*"
+          fi
               
+          MESSAGE="$STATUS  
+          🕓 *Date:* $(date)  
+          🏷️ *Version/Tag:* $VERSION  
+          🌿 *Branch:* $BRANCH  
+          🔀 *Commit:* $COMMIT  
+          👤 *Author:* $LAST_AUTHOR  
+          🔗 *Repo:* $REPO_URL"
+
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d "text=$MESSAGE" \
             -d "parse_mode=Markdown"
-
