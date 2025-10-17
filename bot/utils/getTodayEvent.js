@@ -4,11 +4,7 @@ const events = require("../constants/events");
 
 const getEventForDate = (dateInput) => {
     let date;
-    if (moment.isMoment(dateInput)) {
-        date = dateInput.clone().startOf("day");
-    } else {
-        date = moment(dateInput, "YYYY-MM-DD");
-    }
+    date = dateInput.clone().startOf("day");
 
     const startDate = moment(startCalendarDate, "YYYY-MM-DD");
 
@@ -47,4 +43,4 @@ const getTodayEvent = () => {
     };
 };
 
-module.exports = { getTodayEvent };
+module.exports = { getTodayEvent, getEventForDate };

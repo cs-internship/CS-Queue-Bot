@@ -11,17 +11,10 @@ module.exports = function registerCallbackHandler(bot) {
             if (blockedUsers.has(userId)) {
                 blockedUsers.delete(userId);
 
-                try {
-                    await ctx.telegram.sendMessage(
-                        userId,
-                        "✅ شما توسط ادمین از بلاک خارج شدید."
-                    );
-                } catch (err) {
-                    console.warn(
-                        "❗️ ارسال پیام رفع بلاک به کاربر ممکن نبود:",
-                        err.description
-                    );
-                }
+                await ctx.telegram.sendMessage(
+                    userId,
+                    "✅ شما توسط ادمین از بلاک خارج شدید."
+                );
 
                 await ctx.telegram.sendMessage(
                     ADMIN_GROUP_ID,

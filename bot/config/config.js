@@ -1,11 +1,29 @@
 require("dotenv").config();
 const { version } = require("../../package.json");
 
-module.exports = {
-    TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
-    PAT_TOKEN: process.env.PAT_TOKEN,
-    ADMIN_GROUP_ID: process.env.Admin_Group_ID,
-    GROUP_ID: process.env.Group_ID,
+// Helper to read env with fallback and normalized names
+function readEnv(name, alt) {
+    return process.env[name] || (alt ? process.env[alt] : undefined);
+}
+
+const isTest = process.env.NODE_ENV === "test";
+
+const TELEGRAM_BOT_TOKEN =
+    readEnv("TELEGRAM_BOT_TOKEN") ||
+    (isTest ? "TEST_TELEGRAM_TOKEN" : undefined);
+const PAT_TOKEN =
+    readEnv("PAT_TOKEN") || (isTest ? "TEST_PAT_TOKEN" : undefined);
+const ADMIN_GROUP_ID =
+    readEnv("ADMIN_GROUP_ID", "Admin_Group_ID") ||
+    (isTest ? "-1001234567890" : undefined);
+const GROUP_ID =
+    readEnv("GROUP_ID", "Group_ID") || (isTest ? "-1009876543210" : undefined);
+
+const config = {
+    TELEGRAM_BOT_TOKEN,
+    PAT_TOKEN,
+    ADMIN_GROUP_ID,
+    GROUP_ID,
     ORGANIZATION: "cs-internship",
     PROJECT: "CS Internship Program",
     PARENT_ID: 30789,
@@ -20,24 +38,28 @@ module.exports = {
     startCalendarDate: "2025-01-13",
 };
 
-// Ensure that the environment variables are set
-if (!module.exports.TELEGRAM_BOT_TOKEN) {
-    throw new Error(
-        "ERR>> TELEGRAM_BOT_TOKEN is not set in the environment variables."
-    );
+// During normal runs, enforce required env vars; during tests provide defaults
+if (!isTest) {
+    if (!config.TELEGRAM_BOT_TOKEN) {
+        throw new Error(
+            "ERR>> TELEGRAM_BOT_TOKEN is not set in the environment variables."
+        );
+    }
+    if (!config.PAT_TOKEN) {
+        throw new Error(
+            "ERR>> PAT_TOKEN is not set in the environment variables."
+        );
+    }
+    if (!config.ADMIN_GROUP_ID) {
+        throw new Error(
+            "ERR>> ADMIN_GROUP_ID is not set in the environment variables."
+        );
+    }
+    if (!config.GROUP_ID) {
+        throw new Error(
+            "ERR>> GROUP_ID is not set in the environment variables."
+        );
+    }
 }
-if (!module.exports.PAT_TOKEN) {
-    throw new Error("ERR>> PAT_TOKEN is not set in the environment variables.");
-}
-if (!module.exports.ADMIN_GROUP_ID) {
-    throw new Error(
-        "ERR>> ADMIN_GROUP_ID is not set in the environment variables."
-    );
-}
-if (!module.exports.GROUP_ID) {
-    throw new Error("ERR>> GROUP_ID is not set in the environment variables.");
-}
-if (!module.exports.PORT) {
-    console.warn("⚠️ PORT is not set, defaulting to 3000.");
-    module.exports.port = 3000; // Default port
-}
+
+module.exports = config;
