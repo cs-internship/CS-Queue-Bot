@@ -149,6 +149,7 @@ jobs:
           REPO_URL="https://github.com/$GITHUB_REPOSITORY"
           LAST_AUTHOR=$(git log -1 --pretty=format:'%an')
           LAST_COMMIT_MSG=$(git log -1 --pretty=format:'%s')
+              
           MESSAGE="✅ Deployment completed successfully on Render!
           🕓 $(date)
           🏷️ Version/Tag: $VERSION
@@ -157,7 +158,9 @@ jobs:
           👤 Last Commit Author: $LAST_AUTHOR
           💬 Last Commit Msg: $LAST_COMMIT_MSG
           🔗 Repo: $REPO_URL"
-          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
-            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-            -d text="$MESSAGE"
-            -d parse_mode=Markdown
+              
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d "text=$MESSAGE" \
+            -d "parse_mode=Markdown"
+
