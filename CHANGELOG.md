@@ -1,3 +1,10 @@
+## [3.1.2](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.1...v3.1.2) (2025-10-19)
+
+
+### Bug Fixes
+
+* update message to use "Username" instead of "یوزرنیم" for clarity ([f291bc4](https://github.com/cs-internship/CS-Queue-Bot/commit/f291bc4c1b8826c0f949043a8b8c5b8afa95a29a))
+
 ## [3.1.1](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.0...v3.1.1) (2025-10-17)
 
 
