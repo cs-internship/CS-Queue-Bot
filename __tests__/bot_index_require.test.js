@@ -24,18 +24,18 @@ test("requiring bot index does not crash when Telegraf is mocked", () => {
 
     jest.doMock("telegraf", () => ({ Telegraf: MockTelegraf }));
     // mock the same module id that index.js requires
-    jest.doMock("../../bot/config/config", () => ({
+    jest.doMock("../bot/config/config", () => ({
         TELEGRAM_BOT_TOKEN: "x",
         PORT: 3000,
     }));
     // avoid starting an express server or scheduling jobs
-    jest.doMock("../../bot/server", () => ({ startServer: jest.fn() }));
-    jest.doMock("../../bot/utils/scheduleMessage", () => ({
+    jest.doMock("../bot/server", () => ({ startServer: jest.fn() }));
+    jest.doMock("../bot/utils/scheduleMessage", () => ({
         scheduleAdminMessage: jest.fn(),
     }));
-    jest.doMock("../../bot/commands/registerCommands", () => jest.fn());
+    jest.doMock("../bot/commands/registerCommands", () => jest.fn());
 
     // require the bot module directly to avoid executing the top-level launcher in index.js
-    const mod = require("../../bot");
+    const mod = require("../bot");
     expect(mod.bot).toBeDefined();
 });

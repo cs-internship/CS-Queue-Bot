@@ -4,7 +4,7 @@ describe("spamProtection util", () => {
     });
 
     test("isSpamming returns false for few messages", () => {
-        jest.mock("../../config/config", () => ({
+        jest.mock("../../bot/config/config", () => ({
             SPAM_TIME_WINDOW: 6000,
             SPAM_THRESHOLD: 6,
             userMessageCounts: new Map(),
@@ -12,7 +12,7 @@ describe("spamProtection util", () => {
         const {
             isSpamming,
             userMessageCounts,
-        } = require("../../utils/spamProtection");
+        } = require("../../bot/utils/spamProtection");
         const userId = "u1";
         // ensure clean
         userMessageCounts.clear();
@@ -21,7 +21,7 @@ describe("spamProtection util", () => {
     });
 
     test("isSpamming returns true when threshold exceeded", () => {
-        jest.mock("../../config/config", () => ({
+        jest.mock("../../bot/config/config", () => ({
             SPAM_TIME_WINDOW: 6000,
             SPAM_THRESHOLD: 6,
             userMessageCounts: new Map(),
@@ -29,13 +29,13 @@ describe("spamProtection util", () => {
         const {
             isSpamming,
             userMessageCounts,
-        } = require("../../utils/spamProtection");
+        } = require("../../bot/utils/spamProtection");
         const userId = "u2";
         userMessageCounts.clear();
 
         // simulate many messages within window
         const now = Date.now();
-        const { SPAM_THRESHOLD } = require("../../config/config");
+        const { SPAM_THRESHOLD } = require("../../bot/config/config");
         const timestamps = new Array(SPAM_THRESHOLD + 2).fill(now);
         userMessageCounts.set(userId, timestamps);
 

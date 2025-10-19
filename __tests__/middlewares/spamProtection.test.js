@@ -8,14 +8,14 @@ describe("spamProtection middleware", () => {
 
     test("kicks and replies when isSpamming returns true", async () => {
         const mockIsSpamming = jest.fn().mockReturnValue(true);
-        jest.doMock("../../utils/spamProtection", () => ({
+        jest.doMock("../../bot/utils/spamProtection", () => ({
             isSpamming: mockIsSpamming,
         }));
 
         const cfg = { GROUP_ID: 1, userMessageCounts: new Map() };
-        jest.doMock("../../config/config", () => cfg);
+        jest.doMock("../../bot/config/config", () => cfg);
 
-        const middlewareFactory = require("../../middlewares/spamProtection");
+        const middlewareFactory = require("../../bot/middlewares/spamProtection");
         const bot = { use: jest.fn() };
 
         await middlewareFactory(bot);
@@ -43,14 +43,14 @@ describe("spamProtection middleware", () => {
 
     test("spamProtection returns early when user already banned", async () => {
         const bot = { use: (fn) => (bot._middleware = fn) };
-        jest.doMock("../../config/config", () => ({
+        jest.doMock("../../bot/config/config", () => ({
             GROUP_ID: 1,
             userMessageCounts: new Map([[7, { banned: true }]]),
         }));
-        jest.doMock("../../utils/spamProtection", () => ({
+        jest.doMock("../../bot/utils/spamProtection", () => ({
             isSpamming: () => false,
         }));
-        const spam = require("../../middlewares/spamProtection");
+        const spam = require("../../bot/middlewares/spamProtection");
         await spam(bot);
 
         const ctx = { message: { chat: { id: 1 } }, from: { id: 7 } };
@@ -64,12 +64,12 @@ describe("spamProtection middleware", () => {
 
     test("calls next when not spamming", async () => {
         jest.resetModules();
-        jest.doMock("../../utils/spamProtection", () => ({
+        jest.doMock("../../bot/utils/spamProtection", () => ({
             isSpamming: () => false,
         }));
         const cfg = { GROUP_ID: 1, userMessageCounts: new Map() };
-        jest.doMock("../../config/config", () => cfg);
-        const middlewareFactory = require("../../middlewares/spamProtection");
+        jest.doMock("../../bot/config/config", () => cfg);
+        const middlewareFactory = require("../../bot/middlewares/spamProtection");
         const bot = { use: jest.fn() };
         await middlewareFactory(bot);
         const mw = bot.use.mock.calls[0][0];

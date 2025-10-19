@@ -11,9 +11,9 @@ describe("groupValidator util", () => {
 
     test("returns false and replies when chat id not allowed", () => {
         // Mock config
-        jest.mock("../../config/config", () => mockConfig);
+        jest.mock("../../bot/config/config", () => mockConfig);
 
-        const { groupValidator } = require("../../utils/groupValidator");
+        const { groupValidator } = require("../../bot/utils/groupValidator");
 
         ctx = { message: { chat: { id: 999 } }, reply: mockReply };
 
@@ -30,9 +30,9 @@ describe("groupValidator util", () => {
         { chatId: mockConfig.GROUP_ID, expected: true },
         { chatId: mockConfig.ADMIN_GROUP_ID, expected: true },
     ])("returns true when chat id is allowed: %o", ({ chatId, expected }) => {
-        jest.mock("../../config/config", () => mockConfig);
+        jest.mock("../../bot/config/config", () => mockConfig);
 
-        const { groupValidator } = require("../../utils/groupValidator");
+        const { groupValidator } = require("../../bot/utils/groupValidator");
 
         ctx = { message: { chat: { id: chatId } } };
         expect(groupValidator(ctx)).toBe(expected);
@@ -40,15 +40,15 @@ describe("groupValidator util", () => {
 
     test("calls errorReply and returns false when ctx is malformed", () => {
         // Mock config
-        jest.mock("../../config/config", () => mockConfig);
+        jest.mock("../../bot/config/config", () => mockConfig);
 
         // Mock errorReply
-        jest.mock("../../utils/errorReply", () => ({
+        jest.mock("../../bot/utils/errorReply", () => ({
             errorReply: jest.fn(),
         }));
 
-        const { groupValidator } = require("../../utils/groupValidator");
-        const { errorReply } = require("../../utils/errorReply");
+        const { groupValidator } = require("../../bot/utils/groupValidator");
+        const { errorReply } = require("../../bot/utils/errorReply");
 
         ctx = {}; // malformed ctx
 

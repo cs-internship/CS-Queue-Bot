@@ -8,11 +8,11 @@ describe("newMembers handler (isolated)", () => {
 
     test("ignores when groupValidator false", async () => {
         await jest.isolateModulesAsync(async () => {
-            jest.doMock("../../utils/groupValidator", () => ({
+            jest.doMock("../../bot/utils/groupValidator", () => ({
                 groupValidator: () => false,
             }));
             const bot = { on: jest.fn() };
-            const register = require("../../handlers/newMembers");
+            const register = require("../../bot/handlers/newMembers");
             register(bot);
             const handler = bot.on.mock.calls[0][1];
             await handler({ message: {} });
@@ -21,11 +21,11 @@ describe("newMembers handler (isolated)", () => {
 
     test("handles invalid member object", async () => {
         await jest.isolateModulesAsync(async () => {
-            jest.doMock("../../utils/groupValidator", () => ({
+            jest.doMock("../../bot/utils/groupValidator", () => ({
                 groupValidator: () => true,
             }));
             const bot = { on: jest.fn() };
-            const register = require("../../handlers/newMembers");
+            const register = require("../../bot/handlers/newMembers");
             register(bot);
             const handler = bot.on.mock.calls[0][1];
             await handler({ message: { new_chat_participant: null } });
@@ -34,11 +34,11 @@ describe("newMembers handler (isolated)", () => {
 
     test("handles bot member by replying with HTML and kicking", async () => {
         await jest.isolateModulesAsync(async () => {
-            jest.doMock("../../utils/groupValidator", () => ({
+            jest.doMock("../../bot/utils/groupValidator", () => ({
                 groupValidator: () => true,
             }));
             const bot = { on: jest.fn() };
-            const register = require("../../handlers/newMembers");
+            const register = require("../../bot/handlers/newMembers");
             register(bot);
             const handler = bot.on.mock.calls[0][1];
 
@@ -64,11 +64,11 @@ describe("newMembers handler (isolated)", () => {
 
     test("handles member with no username by prompting", async () => {
         await jest.isolateModulesAsync(async () => {
-            jest.doMock("../../utils/groupValidator", () => ({
+            jest.doMock("../../bot/utils/groupValidator", () => ({
                 groupValidator: () => true,
             }));
             const bot = { on: jest.fn() };
-            const register = require("../../handlers/newMembers");
+            const register = require("../../bot/handlers/newMembers");
             register(bot);
             const handler = bot.on.mock.calls[0][1];
 
@@ -90,11 +90,11 @@ describe("newMembers handler (isolated)", () => {
 
     test("newMembers removes bot even when names missing", async () => {
         await jest.isolateModulesAsync(async () => {
-            jest.doMock("../../utils/groupValidator", () => ({
+            jest.doMock("../../bot/utils/groupValidator", () => ({
                 groupValidator: () => true,
             }));
             const bot = { on: jest.fn() };
-            const register = require("../../handlers/newMembers");
+            const register = require("../../bot/handlers/newMembers");
             register(bot);
             const handler = bot.on.mock.calls[0][1];
 
@@ -114,17 +114,17 @@ describe("newMembers handler (isolated)", () => {
     test("newMembers createWorkItem success path calls createWorkItem", async () => {
         await jest.isolateModulesAsync(async () => {
             const mockCreate = jest.fn().mockResolvedValue(true);
-            jest.doMock("../../services/azure", () => ({
+            jest.doMock("../../bot/services/azure", () => ({
                 createWorkItem: mockCreate,
             }));
-            jest.doMock("../../utils/groupValidator", () => ({
+            jest.doMock("../../bot/utils/groupValidator", () => ({
                 groupValidator: () => true,
             }));
 
             const bot = {
                 on: jest.fn((evt, handler) => (bot._handler = handler)),
             };
-            const register = require("../../handlers/newMembers");
+            const register = require("../../bot/handlers/newMembers");
             register(bot);
 
             const ctx = {
@@ -147,15 +147,15 @@ describe("newMembers handler (isolated)", () => {
     test("newMembers handler calls createWorkItem and replies on failure", async () => {
         await jest.isolateModulesAsync(async () => {
             const mockCreate = jest.fn().mockRejectedValue(new Error("fail"));
-            jest.doMock("../../services/azure", () => ({
+            jest.doMock("../../bot/services/azure", () => ({
                 createWorkItem: mockCreate,
             }));
-            jest.doMock("../../utils/groupValidator", () => ({
+            jest.doMock("../../bot/utils/groupValidator", () => ({
                 groupValidator: () => true,
             }));
 
             const bot = { on: jest.fn() };
-            const register = require("../../handlers/newMembers");
+            const register = require("../../bot/handlers/newMembers");
             register(bot);
             const handler = bot.on.mock.calls[0][1];
 
@@ -181,11 +181,11 @@ describe("newMembers handler (isolated)", () => {
 
     test("returns early when groupValidator is false", async () => {
         const mockGroup = jest.fn().mockReturnValue(false);
-        jest.doMock("../../utils/groupValidator", () => ({
+        jest.doMock("../../bot/utils/groupValidator", () => ({
             groupValidator: mockGroup,
         }));
 
-        const register = require("../../handlers/newMembers");
+        const register = require("../../bot/handlers/newMembers");
 
         let stored;
         const bot = { on: (evt, cb) => (stored = cb) };
@@ -200,13 +200,13 @@ describe("newMembers handler (isolated)", () => {
 
     test("handles invalid member object gracefully", async () => {
         const mockGroup = jest.fn().mockReturnValue(true);
-        jest.doMock("../../utils/groupValidator", () => ({
+        jest.doMock("../../bot/utils/groupValidator", () => ({
             groupValidator: mockGroup,
         }));
 
         const spy = jest.spyOn(console, "error").mockImplementation(() => {});
 
-        const register = require("../../handlers/newMembers");
+        const register = require("../../bot/handlers/newMembers");
 
         let stored;
         const bot = { on: (evt, cb) => (stored = cb) };
@@ -221,11 +221,11 @@ describe("newMembers handler (isolated)", () => {
 
     test("removes bot members (replyWithHTML + kick)", async () => {
         const mockGroup = jest.fn().mockReturnValue(true);
-        jest.doMock("../../utils/groupValidator", () => ({
+        jest.doMock("../../bot/utils/groupValidator", () => ({
             groupValidator: mockGroup,
         }));
 
-        const register = require("../../handlers/newMembers");
+        const register = require("../../bot/handlers/newMembers");
 
         let stored;
         const bot = { on: (evt, cb) => (stored = cb) };
@@ -251,11 +251,11 @@ describe("newMembers handler (isolated)", () => {
 
     test("prompts when username missing", async () => {
         const mockGroup = jest.fn().mockReturnValue(true);
-        jest.doMock("../../utils/groupValidator", () => ({
+        jest.doMock("../../bot/utils/groupValidator", () => ({
             groupValidator: mockGroup,
         }));
 
-        const register = require("../../handlers/newMembers");
+        const register = require("../../bot/handlers/newMembers");
 
         let stored;
         const bot = { on: (evt, cb) => (stored = cb) };
@@ -279,14 +279,14 @@ describe("newMembers handler (isolated)", () => {
         const mockCreate = jest.fn();
 
         // successful path
-        jest.doMock("../../utils/groupValidator", () => ({
+        jest.doMock("../../bot/utils/groupValidator", () => ({
             groupValidator: mockGroup,
         }));
-        jest.doMock("../../services/azure", () => ({
+        jest.doMock("../../bot/services/azure", () => ({
             createWorkItem: mockCreate,
         }));
 
-        const register = require("../../handlers/newMembers");
+        const register = require("../../bot/handlers/newMembers");
 
         let stored;
         const bot = { on: (evt, cb) => (stored = cb) };
@@ -320,14 +320,14 @@ describe("newMembers handler (isolated)", () => {
 
     test("newMembers prompts when member has no username (cover branch)", async () => {
         await jest.isolateModulesAsync(async () => {
-            jest.doMock("../../utils/groupValidator", () => ({
+            jest.doMock("../../bot/utils/groupValidator", () => ({
                 groupValidator: () => true,
             }));
 
             const bot = {
                 on: jest.fn((evt, handler) => (bot._handler = handler)),
             };
-            const register = require("../../handlers/newMembers");
+            const register = require("../../bot/handlers/newMembers");
             register(bot);
 
             const ctx = {
@@ -349,13 +349,13 @@ describe("newMembers handler (isolated)", () => {
 
     test("newMembers handler outer catch logs and repliesWithHTML on unexpected error", async () => {
         await jest.isolateModulesAsync(async () => {
-            jest.doMock("../../utils/groupValidator", () => ({
+            jest.doMock("../../bot/utils/groupValidator", () => ({
                 groupValidator: () => {
                     throw new Error("boom");
                 },
             }));
             const bot = { on: jest.fn() };
-            const register = require("../../handlers/newMembers");
+            const register = require("../../bot/handlers/newMembers");
             register(bot);
             const handler = bot.on.mock.calls[0][1];
 
@@ -374,13 +374,13 @@ describe("newMembers handler (isolated)", () => {
 
     test("newMembers handler ignores invalid member object", async () => {
         const bot = { on: jest.fn((evt, handler) => (bot._handler = handler)) };
-        jest.doMock("../../services/azure", () => ({
+        jest.doMock("../../bot/services/azure", () => ({
             createWorkItem: jest.fn(),
         }));
-        jest.doMock("../../utils/groupValidator", () => ({
+        jest.doMock("../../bot/utils/groupValidator", () => ({
             groupValidator: () => true,
         }));
-        const register = require("../../handlers/newMembers");
+        const register = require("../../bot/handlers/newMembers");
         register(bot);
 
         const ctx = { message: { new_chat_participant: null } };
@@ -390,14 +390,14 @@ describe("newMembers handler (isolated)", () => {
     test("newMembers handler removes bot and kicks member", async () => {
         const sendReply = jest.fn();
         const kick = jest.fn();
-        jest.doMock("../../services/azure", () => ({
+        jest.doMock("../../bot/services/azure", () => ({
             createWorkItem: jest.fn(),
         }));
-        jest.doMock("../../utils/groupValidator", () => ({
+        jest.doMock("../../bot/utils/groupValidator", () => ({
             groupValidator: () => true,
         }));
         const bot = { on: jest.fn((evt, handler) => (bot._handler = handler)) };
-        const register = require("../../handlers/newMembers");
+        const register = require("../../bot/handlers/newMembers");
         register(bot);
 
         const ctx = {
@@ -420,16 +420,16 @@ describe("newMembers handler (isolated)", () => {
 
     test("creates work item and handles createWorkItem failure", async () => {
         await jest.isolateModulesAsync(async () => {
-            jest.doMock("../../utils/groupValidator", () => ({
+            jest.doMock("../../bot/utils/groupValidator", () => ({
                 groupValidator: () => true,
             }));
             const mockCreate = jest.fn().mockRejectedValue(new Error("fail"));
-            jest.doMock("../../services/azure", () => ({
+            jest.doMock("../../bot/services/azure", () => ({
                 createWorkItem: mockCreate,
             }));
 
             const bot = { on: jest.fn() };
-            const register = require("../../handlers/newMembers");
+            const register = require("../../bot/handlers/newMembers");
             register(bot);
             const handler = bot.on.mock.calls[0][1];
 

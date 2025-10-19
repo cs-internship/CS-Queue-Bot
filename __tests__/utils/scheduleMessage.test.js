@@ -19,14 +19,14 @@ describe("scheduleAdminMessage util", () => {
         }));
 
         // Mock getTodayEvent
-        jest.mock("../../utils/getTodayEvent", () => ({
+        jest.mock("../../bot/utils/getTodayEvent", () => ({
             getTodayEvent: () => ({ hasEvent: false }),
         }));
 
         // Mock config
-        jest.mock("../../config/config", () => ({ ADMIN_GROUP_ID: 123 }));
+        jest.mock("../../bot/config/config", () => ({ ADMIN_GROUP_ID: 123 }));
 
-        const { scheduleAdminMessage } = require("../../utils/scheduleMessage");
+        const { scheduleAdminMessage } = require("../../bot/utils/scheduleMessage");
 
         expect(() => scheduleAdminMessage(bot)).not.toThrow();
         expect(mockSendMessage).not.toHaveBeenCalled();
@@ -40,13 +40,13 @@ describe("scheduleAdminMessage util", () => {
             },
         }));
 
-        jest.mock("../../utils/getTodayEvent", () => ({
+        jest.mock("../../bot/utils/getTodayEvent", () => ({
             getTodayEvent: () => ({ hasEvent: true, title: "TestTitle" }),
         }));
 
-        jest.mock("../../config/config", () => ({ ADMIN_GROUP_ID: 123 }));
+        jest.mock("../../bot/config/config", () => ({ ADMIN_GROUP_ID: 123 }));
 
-        const { scheduleAdminMessage } = require("../../utils/scheduleMessage");
+        const { scheduleAdminMessage } = require("../../bot/utils/scheduleMessage");
 
         scheduleAdminMessage(bot);
 
@@ -64,11 +64,11 @@ describe("scheduleAdminMessage util", () => {
             },
         }));
 
-        jest.mock("../../utils/getTodayEvent", () => ({
+        jest.mock("../../bot/utils/getTodayEvent", () => ({
             getTodayEvent: () => ({ hasEvent: true, title: "TestTitle" }),
         }));
 
-        jest.mock("../../config/config", () => ({ ADMIN_GROUP_ID: 123 }));
+        jest.mock("../../bot/config/config", () => ({ ADMIN_GROUP_ID: 123 }));
 
         // Mock bot.telegram.sendMessage to throw error
         const botWithError = {
@@ -79,7 +79,7 @@ describe("scheduleAdminMessage util", () => {
             },
         };
 
-        const { scheduleAdminMessage } = require("../../utils/scheduleMessage");
+        const { scheduleAdminMessage } = require("../../bot/utils/scheduleMessage");
 
         expect(() => scheduleAdminMessage(botWithError)).not.toThrow();
     });

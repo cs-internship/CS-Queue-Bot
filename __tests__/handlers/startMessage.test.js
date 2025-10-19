@@ -8,12 +8,12 @@ describe("startMessage handler", () => {
 
     test("startMessage private chat handles missing first/last name gracefully", async () => {
         await jest.isolateModulesAsync(async () => {
-            jest.doMock("../../utils/sendReaction", () => ({
+            jest.doMock("../../bot/utils/sendReaction", () => ({
                 sendReaction: jest.fn(),
             }));
 
             const bot = { start: jest.fn((fn) => (bot._handler = fn)) };
-            require("../../handlers/startMessage")(bot);
+            require("../../bot/handlers/startMessage")(bot);
 
             const sentMessage = { message_id: 321 };
             const ctx = {
@@ -34,10 +34,10 @@ describe("startMessage handler", () => {
     test("startMessage sends reaction for non-private chat", async () => {
         await jest.isolateModulesAsync(async () => {
             const sendReaction = jest.fn();
-            jest.doMock("../../utils/sendReaction", () => ({ sendReaction }));
+            jest.doMock("../../bot/utils/sendReaction", () => ({ sendReaction }));
 
             const bot = { start: (fn) => (bot._handler = fn) };
-            const register = require("../../handlers/startMessage");
+            const register = require("../../bot/handlers/startMessage");
             register(bot);
 
             const ctx = { chat: { type: "group" }, from: { first_name: "A" } };
@@ -50,12 +50,12 @@ describe("startMessage handler", () => {
 
     test("sends reaction when chat not private", async () => {
         const mockSendReaction = jest.fn();
-        jest.doMock("../../utils/sendReaction", () => ({
+        jest.doMock("../../bot/utils/sendReaction", () => ({
             sendReaction: mockSendReaction,
         }));
 
         const bot = { start: jest.fn() };
-        const register = require("../../handlers/startMessage");
+        const register = require("../../bot/handlers/startMessage");
         register(bot);
 
         const handler = bot.start.mock.calls[0][0];
@@ -67,9 +67,9 @@ describe("startMessage handler", () => {
 
     test("non-private chat calls sendReaction", async () => {
         const sendReaction = jest.fn();
-        jest.doMock("../../utils/sendReaction", () => ({ sendReaction }));
+        jest.doMock("../../bot/utils/sendReaction", () => ({ sendReaction }));
 
-        const register = require("../../handlers/startMessage");
+        const register = require("../../bot/handlers/startMessage");
 
         let stored;
         const bot = { start: (cb) => (stored = cb) };
@@ -83,9 +83,9 @@ describe("startMessage handler", () => {
 
     test("private chat pins and sends message", async () => {
         const sendReaction = jest.fn();
-        jest.doMock("../../utils/sendReaction", () => ({ sendReaction }));
+        jest.doMock("../../bot/utils/sendReaction", () => ({ sendReaction }));
 
-        const register = require("../../handlers/startMessage");
+        const register = require("../../bot/handlers/startMessage");
 
         let stored;
         const bot = { start: (cb) => (stored = cb) };
@@ -112,13 +112,13 @@ describe("startMessage handler", () => {
 
     test("handles errors during start flow", async () => {
         const sendReaction = jest.fn();
-        jest.doMock("../../utils/sendReaction", () => ({ sendReaction }));
+        jest.doMock("../../bot/utils/sendReaction", () => ({ sendReaction }));
 
         const spyErr = jest
             .spyOn(console, "error")
             .mockImplementation(() => {});
 
-        const register = require("../../handlers/startMessage");
+        const register = require("../../bot/handlers/startMessage");
 
         let stored;
         const bot = { start: (cb) => (stored = cb) };
@@ -139,12 +139,12 @@ describe("startMessage handler", () => {
     });
 
     test("private chat replies, pins and sends telegram message", async () => {
-        jest.doMock("../../utils/sendReaction", () => ({
+        jest.doMock("../../bot/utils/sendReaction", () => ({
             sendReaction: jest.fn(),
         }));
 
         const bot = { start: jest.fn() };
-        const register = require("../../handlers/startMessage");
+        const register = require("../../bot/handlers/startMessage");
         register(bot);
 
         const handler = bot.start.mock.calls[0][0];
@@ -173,12 +173,12 @@ describe("startMessage handler", () => {
 
     test("for non-private chat calls sendReaction and does not reply", () => {
         const mockSendReaction = jest.fn();
-        jest.mock("../../utils/sendReaction", () => ({
+        jest.mock("../../bot/utils/sendReaction", () => ({
             sendReaction: mockSendReaction,
         }));
 
         const bot = { start: jest.fn() };
-        require("../../handlers/startMessage")(bot);
+        require("../../bot/handlers/startMessage")(bot);
 
         // find the registered handler and call it
         const handler = bot.start.mock.calls[0][0];
@@ -191,11 +191,11 @@ describe("startMessage handler", () => {
 
     test("for private chat replies and pins message", async () => {
         const bot = { start: jest.fn() };
-        jest.mock("../../utils/sendReaction", () => ({
+        jest.mock("../../bot/utils/sendReaction", () => ({
             sendReaction: jest.fn(),
         }));
 
-        require("../../handlers/startMessage")(bot);
+        require("../../bot/handlers/startMessage")(bot);
         const handler = bot.start.mock.calls[0][0];
 
         const sentMessage = { message_id: 42 };

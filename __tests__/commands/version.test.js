@@ -5,13 +5,13 @@ describe("version commands", () => {
     });
 
     test("version replies to owner and reacts for others", async () => {
-        jest.mock("../../config/config", () => ({ BOT_VERSION: "1.2.3" }));
+        jest.mock("../../bot/config/config", () => ({ BOT_VERSION: "1.2.3" }));
         const mockSendReaction = jest.fn();
-        jest.mock("../../utils/sendReaction", () => ({
+        jest.mock("../../bot/utils/sendReaction", () => ({
             sendReaction: mockSendReaction,
         }));
 
-        const { versionCommand } = require("../../commands/version");
+        const { versionCommand } = require("../../bot/commands/version");
 
         const ctxOwner = { from: { username: "Ali_Sdg90" }, reply: jest.fn() };
         await versionCommand(ctxOwner);
@@ -23,13 +23,13 @@ describe("version commands", () => {
     });
 
     test("version error path calls errorReply when reply throws", async () => {
-        jest.doMock("../../config/config", () => ({ BOT_VERSION: "0.0.0" }));
+        jest.doMock("../../bot/config/config", () => ({ BOT_VERSION: "0.0.0" }));
         const mockErrorReply = jest.fn();
-        jest.doMock("../../utils/errorReply", () => ({
+        jest.doMock("../../bot/utils/errorReply", () => ({
             errorReply: mockErrorReply,
         }));
 
-        const { versionCommand } = require("../../commands/version");
+        const { versionCommand } = require("../../bot/commands/version");
 
         const ctx = {
             from: { username: "Ali_Sdg90" },

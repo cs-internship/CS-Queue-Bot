@@ -9,10 +9,10 @@ describe("adminChecker util", () => {
     });
 
     test("returns true for administrator and creator statuses", async () => {
-        jest.mock("../../utils/errorReply", () => ({
+        jest.mock("../../bot/utils/errorReply", () => ({
             errorReply: mockErrorReply,
         }));
-        const { isAdminTalking } = require("../../utils/adminChecker");
+        const { isAdminTalking } = require("../../bot/utils/adminChecker");
 
         const ctx = {
             telegram: {
@@ -28,10 +28,10 @@ describe("adminChecker util", () => {
     });
 
     test("returns false for non-admin status", async () => {
-        jest.mock("../../utils/errorReply", () => ({
+        jest.mock("../../bot/utils/errorReply", () => ({
             errorReply: mockErrorReply,
         }));
-        const { isAdminTalking } = require("../../utils/adminChecker");
+        const { isAdminTalking } = require("../../bot/utils/adminChecker");
 
         const ctx = {
             telegram: {
@@ -47,10 +47,10 @@ describe("adminChecker util", () => {
     });
 
     test("on error calls errorReply and returns false", async () => {
-        jest.mock("../../utils/errorReply", () => ({
+        jest.mock("../../bot/utils/errorReply", () => ({
             errorReply: mockErrorReply,
         }));
-        const { isAdminTalking } = require("../../utils/adminChecker");
+        const { isAdminTalking } = require("../../bot/utils/adminChecker");
 
         const ctx = {
             telegram: {

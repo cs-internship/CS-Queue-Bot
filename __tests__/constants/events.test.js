@@ -1,4 +1,4 @@
-const events = require("../../constants/events");
+const events = require("../../bot/constants/events");
 
 describe("events constants", () => {
     test("exports an array of objects with title property", () => {

@@ -5,13 +5,13 @@ describe("callback handler", () => {
     });
 
     test("unban for existing blocked user sends messages", async () => {
-        jest.mock("../../config/config", () => ({
+        jest.mock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 999,
             blockedUsers: new Set([55]),
         }));
 
         const bot = { on: jest.fn() };
-        require("../../handlers/callback")(bot);
+        require("../../bot/handlers/callback")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = {
@@ -29,12 +29,12 @@ describe("callback handler", () => {
     });
 
     test("callback query with non-unban data does nothing", async () => {
-        jest.doMock("../../config/config", () => ({
+        jest.doMock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 999,
             blockedUsers: new Set([1]),
         }));
         const bot = { on: jest.fn() };
-        require("../../handlers/callback")(bot);
+        require("../../bot/handlers/callback")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = {
@@ -50,13 +50,13 @@ describe("callback handler", () => {
     });
 
     test("unban for not-blocked user notifies admin group", async () => {
-        jest.mock("../../config/config", () => ({
+        jest.mock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 999,
             blockedUsers: new Set(),
         }));
 
         const bot = { on: jest.fn() };
-        require("../../handlers/callback")(bot);
+        require("../../bot/handlers/callback")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = {
@@ -77,11 +77,11 @@ describe("callback handler", () => {
         const answerCbQuery = jest.fn();
 
         const blocked = new Set();
-        jest.doMock("../../config/config", () => ({
+        jest.doMock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 999,
             blockedUsers: blocked,
         }));
-        const register = require("../../handlers/callback");
+        const register = require("../../bot/handlers/callback");
 
         const bot = { on: jest.fn((evt, handler) => (bot._handler = handler)) };
         register(bot);

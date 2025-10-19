@@ -18,7 +18,7 @@ describe("startServer", () => {
 
         jest.doMock("express", () => mockExpress);
 
-        const { startServer } = require("../../server/index");
+        const { startServer } = require("../../bot/server/index");
         startServer(4000);
         expect(mockGet).toHaveBeenCalledWith("/", expect.any(Function));
         expect(mockListen).toHaveBeenCalledWith(4000, expect.any(Function));

@@ -18,7 +18,7 @@ describe("errorHandler middleware", () => {
             from: { first_name: "FN", username: "user", id: 1 },
         };
 
-        const handler = require("../../middlewares/errorHandler");
+        const handler = require("../../bot/middlewares/errorHandler");
         const err = new Error("boom");
 
         await handler(err, ctx);
@@ -32,7 +32,7 @@ describe("errorHandler middleware", () => {
                 .spyOn(console, "warn")
                 .mockImplementation(() => {});
 
-            const handler = require("../../middlewares/errorHandler");
+            const handler = require("../../bot/middlewares/errorHandler");
 
             const err = new Error("boom");
             const ctx = {
@@ -59,7 +59,7 @@ describe("errorHandler middleware", () => {
 
     test("errorHandler schedules retry on 429 rate limit", async () => {
         jest.useFakeTimers();
-        const handler = require("../../middlewares/errorHandler");
+        const handler = require("../../bot/middlewares/errorHandler");
 
         const err = {
             response: { error_code: 429, parameters: { retry_after: 1 } },
@@ -80,7 +80,7 @@ describe("errorHandler middleware", () => {
     });
 
     test("errorHandler does nothing when ctx.telegram is missing", async () => {
-        const handler = require("../../middlewares/errorHandler");
+        const handler = require("../../bot/middlewares/errorHandler");
         const err = new Error("x");
         const ctx = {}; // no telegram
 
@@ -94,7 +94,7 @@ describe("errorHandler middleware", () => {
             from: { first_name: "FN" },
         };
 
-        const handler = require("../../middlewares/errorHandler");
+        const handler = require("../../bot/middlewares/errorHandler");
         const err = {
             response: { error_code: 429, parameters: { retry_after: 1 } },
             message: "rate",
@@ -118,13 +118,13 @@ describe("errorHandler middleware", () => {
         };
 
         // mock config
-        jest.doMock("../../config/config", () => ({ ADMIN_GROUP_ID: 555 }));
+        jest.doMock("../../bot/config/config", () => ({ ADMIN_GROUP_ID: 555 }));
 
         // replace setTimeout to call function immediately
         const realSetTimeout = global.setTimeout;
         global.setTimeout = (fn) => fn();
 
-        const errorHandler = require("../../middlewares/errorHandler");
+        const errorHandler = require("../../bot/middlewares/errorHandler");
         await errorHandler(err, ctx);
 
         expect(sendMessage).toHaveBeenCalled();

@@ -8,7 +8,7 @@ describe("messages handler", () => {
 
     test("returns when pinned_message is present", async () => {
         const bot = { on: jest.fn() };
-        const register = require("../../handlers/messages");
+        const register = require("../../bot/handlers/messages");
         register(bot);
 
         const handler = bot.on.mock.calls[0][1];
@@ -18,16 +18,16 @@ describe("messages handler", () => {
 
     test("messages handler handles missing username in private message and includes placeholder", async () => {
         await jest.isolateModulesAsync(async () => {
-            jest.doMock("../../config/config", () => ({
+            jest.doMock("../../bot/config/config", () => ({
                 ADMIN_GROUP_ID: 77,
                 blockedUsers: new Set(),
             }));
-            jest.doMock("../../utils/spamProtection", () => ({
+            jest.doMock("../../bot/utils/spamProtection", () => ({
                 isSpamming: () => false,
             }));
 
             const bot = { on: jest.fn() };
-            const register = require("../../handlers/messages");
+            const register = require("../../bot/handlers/messages");
             register(bot);
             const handler = bot.on.mock.calls[0][1];
 
@@ -51,16 +51,16 @@ describe("messages handler", () => {
     test("messages handler spam path with missing username blocks and notifies admin", async () => {
         await jest.isolateModulesAsync(async () => {
             const blocked = new Set();
-            jest.doMock("../../config/config", () => ({
+            jest.doMock("../../bot/config/config", () => ({
                 ADMIN_GROUP_ID: 88,
                 blockedUsers: blocked,
             }));
-            jest.doMock("../../utils/spamProtection", () => ({
+            jest.doMock("../../bot/utils/spamProtection", () => ({
                 isSpamming: () => true,
             }));
 
             const bot = { on: jest.fn() };
-            const register = require("../../handlers/messages");
+            const register = require("../../bot/handlers/messages");
             register(bot);
             const handler = bot.on.mock.calls[0][1];
 
@@ -85,15 +85,15 @@ describe("messages handler", () => {
         const sendMessage = jest.fn();
         const bot = { on: jest.fn((evt, handler) => (bot._handler = handler)) };
 
-        jest.doMock("../../config/config", () => ({
+        jest.doMock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 999,
             blockedUsers: new Set(),
         }));
-        jest.doMock("../../utils/spamProtection", () => ({
+        jest.doMock("../../bot/utils/spamProtection", () => ({
             isSpamming: () => false,
         }));
 
-        const register = require("../../handlers/messages");
+        const register = require("../../bot/handlers/messages");
         register(bot);
 
         const ctx = {
@@ -118,15 +118,15 @@ describe("messages handler", () => {
         const sendMessage = jest.fn();
         const bot = { on: jest.fn((evt, handler) => (bot._handler = handler)) };
 
-        jest.doMock("../../config/config", () => ({
+        jest.doMock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 321,
             blockedUsers: new Set(),
         }));
-        jest.doMock("../../utils/spamProtection", () => ({
+        jest.doMock("../../bot/utils/spamProtection", () => ({
             isSpamming: () => false,
         }));
 
-        const register = require("../../handlers/messages");
+        const register = require("../../bot/handlers/messages");
         register(bot);
 
         const ctx = {
@@ -151,15 +151,15 @@ describe("messages handler", () => {
 
         // simulate isSpamming true
         const blocked = new Set();
-        jest.doMock("../../config/config", () => ({
+        jest.doMock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 111,
             blockedUsers: blocked,
         }));
-        jest.doMock("../../utils/spamProtection", () => ({
+        jest.doMock("../../bot/utils/spamProtection", () => ({
             isSpamming: () => true,
         }));
 
-        const register = require("../../handlers/messages");
+        const register = require("../../bot/handlers/messages");
         register(bot);
 
         const ctx = {
@@ -179,7 +179,7 @@ describe("messages handler", () => {
 
     test("handles non-private chat by calling next", async () => {
         const bot = { on: jest.fn() };
-        const register = require("../../handlers/messages");
+        const register = require("../../bot/handlers/messages");
         register(bot);
 
         const handler = bot.on.mock.calls[0][1];
@@ -190,11 +190,11 @@ describe("messages handler", () => {
     });
 
     test("handles blocked user in private chat", async () => {
-        const cfg = require("../../config/config");
+        const cfg = require("../../bot/config/config");
         cfg.blockedUsers.add(999);
 
         const bot = { on: jest.fn() };
-        const register = require("../../handlers/messages");
+        const register = require("../../bot/handlers/messages");
         register(bot);
 
         const handler = bot.on.mock.calls[0][1];
@@ -208,16 +208,16 @@ describe("messages handler", () => {
 
     test("detects and registers valid username", async () => {
         // Ensure deterministic behavior by mocking config and spamProtection
-        jest.doMock("../../config/config", () => ({
+        jest.doMock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 999,
             blockedUsers: new Set(),
         }));
-        jest.doMock("../../utils/spamProtection", () => ({
+        jest.doMock("../../bot/utils/spamProtection", () => ({
             isSpamming: () => false,
         }));
 
         const bot = { on: jest.fn() };
-        const register = require("../../handlers/messages");
+        const register = require("../../bot/handlers/messages");
         register(bot);
 
         const handler = bot.on.mock.calls[0][1];
@@ -237,14 +237,14 @@ describe("messages handler", () => {
 
     test("messages handler returns early on pinned_message present", async () => {
         const bot = { on: jest.fn((evt, handler) => (bot._handler = handler)) };
-        jest.doMock("../../config/config", () => ({
+        jest.doMock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 1,
             blockedUsers: new Set(),
         }));
-        jest.doMock("../../utils/spamProtection", () => ({
+        jest.doMock("../../bot/utils/spamProtection", () => ({
             isSpamming: () => false,
         }));
-        const register = require("../../handlers/messages");
+        const register = require("../../bot/handlers/messages");
         register(bot);
 
         const ctx = {
@@ -258,7 +258,7 @@ describe("messages handler", () => {
 
     test("startMessage handles error when pinChatMessage fails", async () => {
         const bot = { start: (fn) => (bot._handler = fn) };
-        const register = require("../../handlers/startMessage");
+        const register = require("../../bot/handlers/startMessage");
         register(bot);
 
         const ctx = {
@@ -275,7 +275,7 @@ describe("messages handler", () => {
 
     test("returns early for pinned_message", () => {
         const bot = { on: jest.fn() };
-        require("../../handlers/messages")(bot);
+        require("../../bot/handlers/messages")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = { message: { pinned_message: {} } };
@@ -283,16 +283,16 @@ describe("messages handler", () => {
     });
 
     test("private valid username registers and sends admin message", async () => {
-        jest.mock("../../config/config", () => ({
+        jest.mock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 999,
             blockedUsers: new Set(),
         }));
-        jest.mock("../../utils/spamProtection", () => ({
+        jest.mock("../../bot/utils/spamProtection", () => ({
             isSpamming: jest.fn().mockReturnValue(false),
         }));
 
         const bot = { on: jest.fn() };
-        require("../../handlers/messages")(bot);
+        require("../../bot/handlers/messages")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = {
@@ -312,16 +312,16 @@ describe("messages handler", () => {
     });
 
     test("private non-text logs and still not crash", async () => {
-        jest.mock("../../config/config", () => ({
+        jest.mock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 999,
             blockedUsers: new Set(),
         }));
-        jest.mock("../../utils/spamProtection", () => ({
+        jest.mock("../../bot/utils/spamProtection", () => ({
             isSpamming: jest.fn().mockReturnValue(false),
         }));
 
         const bot = { on: jest.fn() };
-        require("../../handlers/messages")(bot);
+        require("../../bot/handlers/messages")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = {

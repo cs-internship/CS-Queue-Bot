@@ -5,14 +5,14 @@ describe("createWorkItem service", () => {
         await jest.isolateModulesAsync(async () => {
             const mockAxios = { get: jest.fn(), post: jest.fn() };
             jest.doMock("axios", () => mockAxios);
-            jest.doMock("../../config/config", () => ({
+            jest.doMock("../../bot/config/config", () => ({
                 ORGANIZATION: "org",
                 PROJECT: "proj",
                 WORKITEM_ID: 1,
                 PARENT_ID: 2,
                 PAT_TOKEN: "pat",
             }));
-            const { createWorkItem } = require("../../services/azure");
+            const { createWorkItem } = require("../../bot/services/azure");
 
             const ctx = {
                 message: { date: 1, message_id: 10 },
@@ -41,14 +41,14 @@ describe("createWorkItem service", () => {
             });
             const mockPost = jest.fn().mockResolvedValue({});
             jest.doMock("axios", () => ({ get: mockGet, post: mockPost }));
-            jest.doMock("../../config/config", () => ({
+            jest.doMock("../../bot/config/config", () => ({
                 ORGANIZATION: "org",
                 PROJECT: "proj",
                 WORKITEM_ID: 1,
                 PARENT_ID: 2,
                 PAT_TOKEN: "pat",
             }));
-            const { createWorkItem } = require("../../services/azure");
+            const { createWorkItem } = require("../../bot/services/azure");
 
             const ctx = {
                 message: { date: 1630000000, message_id: 42 },
@@ -72,7 +72,7 @@ describe("createWorkItem service", () => {
 
     test("createWorkItem returns early when user has no username", async () => {
         await jest.isolateModulesAsync(async () => {
-            const { createWorkItem } = require("../../services/azure");
+            const { createWorkItem } = require("../../bot/services/azure");
 
             const ctx = {
                 reply: jest.fn(),
@@ -103,7 +103,7 @@ describe("createWorkItem service", () => {
                 post: jest.fn().mockResolvedValue({}),
             }));
 
-            const { createWorkItem } = require("../../services/azure");
+            const { createWorkItem } = require("../../bot/services/azure");
 
             const ctx = {
                 reply: jest.fn(),
@@ -127,14 +127,14 @@ describe("createWorkItem service", () => {
     test("createWorkItem handles axios.get error and calls errorReply", async () => {
         await jest.isolateModulesAsync(async () => {
             const mockErrorReply = jest.fn();
-            jest.doMock("../../utils/errorReply", () => ({
+            jest.doMock("../../bot/utils/errorReply", () => ({
                 errorReply: mockErrorReply,
             }));
             jest.doMock("axios", () => ({
                 get: jest.fn().mockRejectedValue(new Error("network")),
             }));
 
-            const { createWorkItem } = require("../../services/azure");
+            const { createWorkItem } = require("../../bot/services/azure");
 
             const ctx = {
                 reply: jest.fn(),
@@ -162,10 +162,10 @@ describe("createWorkItem service", () => {
             const mockPost = jest.fn().mockRejectedValue(postErr);
             jest.doMock("axios", () => ({ get: mockGet, post: mockPost }));
             const mockErrorReply = jest.fn();
-            jest.doMock("../../utils/errorReply", () => ({
+            jest.doMock("../../bot/utils/errorReply", () => ({
                 errorReply: mockErrorReply,
             }));
-            jest.doMock("../../config/config", () => ({
+            jest.doMock("../../bot/config/config", () => ({
                 ORGANIZATION: "org",
                 PROJECT: "proj",
                 WORKITEM_ID: 1,
@@ -173,7 +173,7 @@ describe("createWorkItem service", () => {
                 PAT_TOKEN: "pat",
             }));
 
-            const { createWorkItem } = require("../../services/azure");
+            const { createWorkItem } = require("../../bot/services/azure");
             const ctx = {
                 message: { date: 1630000000, message_id: 42 },
                 reply: jest.fn(),
@@ -194,10 +194,10 @@ describe("createWorkItem service", () => {
             const mockGet = jest.fn().mockRejectedValue(getErr);
             jest.doMock("axios", () => ({ get: mockGet, post: jest.fn() }));
             const mockErrorReply = jest.fn();
-            jest.doMock("../../utils/errorReply", () => ({
+            jest.doMock("../../bot/utils/errorReply", () => ({
                 errorReply: mockErrorReply,
             }));
-            jest.doMock("../../config/config", () => ({
+            jest.doMock("../../bot/config/config", () => ({
                 ORGANIZATION: "org",
                 PROJECT: "proj",
                 WORKITEM_ID: 1,
@@ -205,7 +205,7 @@ describe("createWorkItem service", () => {
                 PAT_TOKEN: "pat",
             }));
 
-            const { createWorkItem } = require("../../services/azure");
+            const { createWorkItem } = require("../../bot/services/azure");
             const ctx = {
                 message: { date: 1630000000, message_id: 42 },
                 reply: jest.fn(),

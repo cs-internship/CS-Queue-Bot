@@ -1,4 +1,4 @@
-const registerCommands = require("../../commands/registerCommands");
+const registerCommands = require("../../bot/commands/registerCommands");
 
 describe("registerCommands", () => {
     beforeEach(() => {
