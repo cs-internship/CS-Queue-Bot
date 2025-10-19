@@ -1,3 +1,10 @@
+## [3.1.3](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.2...v3.1.3) (2025-10-19)
+
+
+### Bug Fixes
+
+* update CI permissions and refine deployment conditions ([237a146](https://github.com/cs-internship/CS-Queue-Bot/commit/237a1462407feee16e3b12453c101c85f2e20f26))
+
 ## [3.1.2](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.1...v3.1.2) (2025-10-19)
 
 
