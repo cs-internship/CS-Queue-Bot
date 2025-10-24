@@ -1,3 +1,10 @@
+## [3.1.5](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.4...v3.1.5) (2025-10-24)
+
+
+### Bug Fixes
+
+* update wording for Telegram username instructions ([79b157f](https://github.com/cs-internship/CS-Queue-Bot/commit/79b157f79470a846e26f2e017bc8ac7e7d8df84a))
+
 ## [3.1.4](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.3...v3.1.4) (2025-10-19)
 
 
