@@ -45,7 +45,7 @@ module.exports = function registerNewMembersHandler(bot) {
 لطفاً برای حساب کاربری تلگرام خود یک Username تنظیم کنید و پس از انجام این کار، در گروه اطلاع دهید.
 توجه داشته باشید که داشتن Username برای شرکت در جلسات گروه و همچنین جلسه مصاحبه الزامی است.
 
-<a href="https://youtube.com/shorts/eN29f0mtgTE?si=BwZWLx9hfI2UC8gm">آموزش اضافه کردن Username به اکانت تلگرام</a>
+<a href="https://youtube.com/shorts/eN29f0mtgTE?si=BwZWLx9hfI2UC8gm">آموزش افزودن Username به حساب تلگرام</a>
 
 سپاس از همکاری شما 🌱`,
                     { parse_mode: "HTML", disable_web_page_preview: true }
