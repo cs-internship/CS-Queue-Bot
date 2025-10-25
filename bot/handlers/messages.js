@@ -31,9 +31,7 @@ module.exports = function registerPrivateMessageHandler(bot) {
                     ADMIN_GROUP_ID,
                     `🚫 کاربر ${user.first_name} با یوزرنیم @${
                         user.username ?? "—"
-                    } با آی‌دی ${
-                        user.id
-                    } به دلیل اسپم بلاک شد.\n\n#SpamBlocked`,
+                    } با آی‌دی ${user.id} به دلیل اسپم بلاک شد.\n\n#SpamBlocked`,
                     {
                         reply_markup: {
                             inline_keyboard: [
@@ -51,13 +49,25 @@ module.exports = function registerPrivateMessageHandler(bot) {
                 return;
             }
 
+            const now = new Date();
+            const tehranTime = new Date(
+                now.toLocaleString("en-US", { timeZone: "Asia/Tehran" })
+            );
+            const dayOfWeek = tehranTime.getDay();
+
+            const hours = tehranTime.getHours();
+            const minutes = tehranTime.getMinutes();
+            const totalMinutes = hours * 60 + minutes;
+
+            const start = 17 * 60 + 40; // 17:40
+            const end = 18 * 60; // 18:00
+
+            const isAllowedDay = dayOfWeek === 0 || dayOfWeek === 2;
+            const isAllowedTime = totalMinutes >= start && totalMinutes <= end;
+
             const messageText =
                 ctx.message.text ||
-                `
-[پیام غیر متنی]
-
-چک کردن لاگ پیام:
-https://dashboard.render.com/web/srv-cu55kthu0jms73feuhi0/logs`;
+                `[پیام غیر متنی]\n\nچک کردن لاگ پیام:\nhttps://dashboard.render.com/web/srv-cu55kthu0jms73feuhi0/logs`;
 
             if (!ctx.message.text) {
                 console.log(
@@ -75,29 +85,27 @@ https://dashboard.render.com/web/srv-cu55kthu0jms73feuhi0/logs`;
                     !username.includes("__") &&
                     !username.endsWith("_")
                 ) {
-                    await ctx.reply("✅ یوزرنیم شما با موفقیت ثبت شد.");
+                    if (isAllowedDay && isAllowedTime) {
+                        await ctx.reply("✅ یوزرنیم شما با موفقیت ثبت شد.");
+                    }
+
                     isValidUsername = true;
                 }
             }
 
-            const now = new Date();
-            const timeString = now.toLocaleString("fa-IR", {
+            const timeString = tehranTime.toLocaleString("fa-IR", {
                 timeZone: "Asia/Tehran",
                 hour12: false,
             });
 
             await ctx.telegram.sendMessage(
                 ADMIN_GROUP_ID,
-                `📥 پیام جدید در PV:\n\n🕒 ${timeString}\n👤 ${
-                    user.first_name ?? ""
-                } ${user.last_name ?? ""} (@${
-                    user.username ?? "—"
-                })\n🆔 <code>${user.id}</code>\n\n📝 پیام:\n\n${
+                `📥 پیام جدید در PV:\n\n🕒 ${timeString}\n👤 ${user.first_name ?? ""} ${
+                    user.last_name ?? ""
+                } (@${user.username ?? "—"})\n🆔 <code>${user.id}</code>\n\n📝 پیام:\n\n${
                     isValidUsername ? "✅" : "❌"
                 } <code>${messageText}</code>\n\n#PrivateMessage`,
-                {
-                    parse_mode: "HTML",
-                }
+                { parse_mode: "HTML" }
             );
 
             return;

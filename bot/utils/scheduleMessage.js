@@ -21,19 +21,21 @@ const scheduleAdminMessage = (bot) => {
                     return;
                 }
 
-                await bot.telegram.sendMessage(
-                    ADMIN_GROUP_ID,
-                    `سلام دوستان،
-لینک جلسه‌ی ${title} از الان باز شده و تا راس ساعت ۱۸ لینک باز می‌مونه تا بتونید وارد لینک جلسه بشید.
+                const readyText = `سلام دوستان،
+لینک جلسه‌ی **${title}** از الان باز شده و تا راس ساعت ۱۸ لینک باز می‌مونه تا بتونید وارد لینک جلسه بشید.
 
 لطفاً افرادی که وارد جلسه امروز شدند، پیش از شروع جلسه، یوزرنیم اکانت تلگرام خودشون رو از طریق پیام خصوصی برای «بات گروه صف» ارسال کنند.
 این‌ کار برای به‌روزرسانی کارت حضور شما در جلسات معارفه و ورود به برنامه لازم است.
 
 لینک بات گروه:
 
-https://t.me/CSQueueBot`,
+https://t.me/CSQueueBot`;
+
+                await bot.telegram.sendMessage(
+                    ADMIN_GROUP_ID,
+                    readyText.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&"),
                     {
-                        parse_mode: "Markdown",
+                        parse_mode: "MarkdownV2",
                     }
                 );
             } catch (error) {
