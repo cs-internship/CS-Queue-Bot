@@ -21,11 +21,6 @@ pnpm-lock.yaml
 coverage/
 test-results/
 
-# Ignore general JSON/YAML in project root if not overridden
-*.json
-*.yml
-*.yaml
-
 # Ignore editor settings (unless overridden in .prettierrc)
 .vscode/
 .idea/
