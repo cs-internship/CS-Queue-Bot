@@ -34,7 +34,9 @@ describe("startMessage handler", () => {
     test("startMessage sends reaction for non-private chat", async () => {
         await jest.isolateModulesAsync(async () => {
             const sendReaction = jest.fn();
-            jest.doMock("../../bot/utils/sendReaction", () => ({ sendReaction }));
+            jest.doMock("../../bot/utils/sendReaction", () => ({
+                sendReaction,
+            }));
 
             const bot = { start: (fn) => (bot._handler = fn) };
             const register = require("../../bot/handlers/startMessage");

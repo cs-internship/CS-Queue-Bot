@@ -3,7 +3,7 @@ describe("aloha Command", () => {
         jest.resetModules();
         jest.clearAllMocks();
     });
-    
+
     test("returns early when groupValidator is false", async () => {
         jest.doMock("../../bot/utils/groupValidator", () => ({
             groupValidator: () => false,

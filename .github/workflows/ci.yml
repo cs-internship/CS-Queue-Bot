@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -63,7 +63,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -94,7 +94,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -120,8 +120,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        
+
       - name: Send Telegram notification
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           if [ "${IS_ACT}" = "true" ]; then
             TEST_RESULT="success"
@@ -132,7 +135,7 @@ jobs:
             RELEASE_RESULT="${{ needs.release.result }}"
             DEPLOY_RESULT="${{ needs.deploy.result }}"
           fi
-        
+
           STATUS="✅ *Pipeline completed successfully*"
           if [ "$TEST_RESULT" != "success" ]; then
             STATUS="❌ *Tests failed*"
@@ -141,22 +144,26 @@ jobs:
           elif [ "$DEPLOY_RESULT" != "success" ]; then
             STATUS="❌ *Deploy failed*"
           fi
-        
-          VERSION=$(git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD)
+
+          VERSION=$(git tag --points-at HEAD)
+          if [ -z "$VERSION" ]; then
+            VERSION=$(git rev-parse --short HEAD)
+          fi
+
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
           COMMIT=$(git rev-parse --short HEAD)
           REPO_URL="https://github.com/$GITHUB_REPOSITORY"
           LAST_AUTHOR=$(git log -1 --pretty=format:'%an')
-        
-          MESSAGE="$STATUS  
-          🕓 *Date:* $(date)  
-          🏷️ *Version/Tag:* $VERSION  
-          🌿 *Branch:* $BRANCH  
-          🔀 *Commit:* $COMMIT  
-          👤 *Author:* $LAST_AUTHOR  
+
+          MESSAGE="$STATUS
+          🕓 *Date:* $(date)
+          🏷️ *Version/Tag:* $VERSION
+          🌿 *Branch:* $BRANCH
+          🔀 *Commit:* $COMMIT
+          👤 *Author:* $LAST_AUTHOR
           🔗 *Repo:* $REPO_URL"
-        
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d "text=$("$MESSAGE" \
-            -d "parse_mode=Markdown"
+
+                    curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+                      -d chat_id="${TELEGRAM_CHAT_ID}" \
+                      -d text="$MESSAGE" \
+                      -d parse_mode=Markdown

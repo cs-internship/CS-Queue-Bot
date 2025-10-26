@@ -3,7 +3,7 @@ describe("groupId commands", () => {
         jest.resetModules();
         jest.clearAllMocks();
     });
-    
+
     test("groupID replies with chat id", async () => {
         const { groupIDCommand } = require("../../bot/commands/groupId");
         const ctx = { chat: { id: 123 }, reply: jest.fn() };

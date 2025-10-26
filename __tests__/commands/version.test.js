@@ -23,7 +23,9 @@ describe("version commands", () => {
     });
 
     test("version error path calls errorReply when reply throws", async () => {
-        jest.doMock("../../bot/config/config", () => ({ BOT_VERSION: "0.0.0" }));
+        jest.doMock("../../bot/config/config", () => ({
+            BOT_VERSION: "0.0.0",
+        }));
         const mockErrorReply = jest.fn();
         jest.doMock("../../bot/utils/errorReply", () => ({
             errorReply: mockErrorReply,

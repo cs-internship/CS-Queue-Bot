@@ -1,0 +1,36 @@
+# Node modules
+node_modules/
+
+# Build / dist folders
+dist/
+build/
+out/
+
+# Lock files (Prettier will only format these via overrides in .prettierrc)
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Git / OS metadata
+*.log
+*.DS_Store
+*.env
+
+# Coverage / test output
+coverage/
+test-results/
+
+# Ignore general JSON/YAML in project root if not overridden
+*.json
+*.yml
+*.yaml
+
+# Ignore editor settings (unless overridden in .prettierrc)
+.vscode/
+.idea/
+
+# Documentation files
+CHANGELOG.md
+README.md
+LICENSE
