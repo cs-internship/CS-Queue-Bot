@@ -1,3 +1,10 @@
+## [3.1.7](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.6...v3.1.7) (2025-10-26)
+
+
+### Bug Fixes
+
+* update CI configuration and enhance Telegram notification with environment variables ([6211bb0](https://github.com/cs-internship/CS-Queue-Bot/commit/6211bb00f8bb56434d83052af306c0a680d5a273))
+
 ## [3.1.6](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.5...v3.1.6) (2025-10-26)
 
 
