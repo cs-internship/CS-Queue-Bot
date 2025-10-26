@@ -206,7 +206,22 @@ describe("messages handler", () => {
         await handler(ctx, jest.fn());
     });
 
-    test("detects and registers valid username", async () => {
+    test("detects and registers valid username during allowed time", async () => {
+        // Mock Date to be Sunday at 17:45 Tehran time
+        const mockDate = new Date("2025-10-26T14:15:00Z"); // 17:45 Tehran time
+        const realDate = global.Date;
+        global.Date = class extends Date {
+            constructor(...args) {
+                if (args.length === 0) {
+                    return mockDate;
+                }
+                return new realDate(...args);
+            }
+            static now() {
+                return mockDate.getTime();
+            }
+        };
+
         // Ensure deterministic behavior by mocking config and spamProtection
         jest.doMock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 999,
@@ -233,6 +248,9 @@ describe("messages handler", () => {
 
         expect(ctx.reply).toHaveBeenCalled();
         expect(ctx.telegram.sendMessage).toHaveBeenCalled();
+
+        // Restore original Date
+        global.Date = realDate;
     });
 
     test("messages handler returns early on pinned_message present", async () => {
@@ -282,7 +300,22 @@ describe("messages handler", () => {
         expect(handler(ctx)).resolves.toBeUndefined();
     });
 
-    test("private valid username registers and sends admin message", async () => {
+    test("private valid username registers and sends admin message during allowed time", async () => {
+        // Mock Date to be Sunday at 17:45 Tehran time
+        const mockDate = new Date("2025-10-26T14:15:00Z"); // 17:45 Tehran time
+        const realDate = global.Date;
+        global.Date = class extends Date {
+            constructor(...args) {
+                if (args.length === 0) {
+                    return mockDate;
+                }
+                return new realDate(...args);
+            }
+            static now() {
+                return mockDate.getTime();
+            }
+        };
+
         jest.mock("../../bot/config/config", () => ({
             ADMIN_GROUP_ID: 999,
             blockedUsers: new Set(),
@@ -309,6 +342,9 @@ describe("messages handler", () => {
             "✅ یوزرنیم شما با موفقیت ثبت شد."
         );
         expect(ctx.telegram.sendMessage).toHaveBeenCalled();
+
+        // Restore original Date
+        global.Date = realDate;
     });
 
     test("private non-text logs and still not crash", async () => {
