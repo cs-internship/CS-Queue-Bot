@@ -1,3 +1,11 @@
+## [3.1.6](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.5...v3.1.6) (2025-10-26)
+
+
+### Bug Fixes
+
+* correct syntax for Telegram message formatting ([cb0920b](https://github.com/cs-internship/CS-Queue-Bot/commit/cb0920b625efe6ddf163e6f945a7289a15f37a91))
+* enhance username detection tests with time constraints and error handling ([7c1083c](https://github.com/cs-internship/CS-Queue-Bot/commit/7c1083c9b71d119e7a85b6e480278738f9d012ad))
+
 ## [3.1.5](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.4...v3.1.5) (2025-10-24)
 
 
