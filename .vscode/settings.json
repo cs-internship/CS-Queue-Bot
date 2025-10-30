@@ -46,12 +46,6 @@
   // Testing (Jest)
   // ======================================
 
-  // Automatically run Jest tests in watch mode for modified files
-  "jest.autoRun": {
-    "watch": false, // Disable global watch mode
-    "onSave": "test-file" // Run tests only for the saved file
-  },
-
   // Prevent VS Code from opening the Peek View for failed tests
   "testing.automaticallyOpenPeekView": "never",
 
