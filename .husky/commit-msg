@@ -1,8 +1,4 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# Commitlint check
-npx commitlint --edit "$1" > /dev/null 2>&1
+npx --no -- commitlint --edit "${1:-.git/COMMIT_EDITMSG}"
 RESULT=$?
 
 if [ $RESULT -ne 0 ]; then

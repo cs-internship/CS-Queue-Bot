@@ -119,10 +119,14 @@
   "conventionalCommits.promptBody": true,
   "conventionalCommits.promptFooter": true,
 
+  // ======================================
+  // Custom Title Bar Colors
+  // ======================================
+
   "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#113963",
+    "titleBar.activeBackground": "#231163b3",
     "titleBar.activeForeground": "#e7e7e7",
-    "titleBar.inactiveBackground": "#0f3459",
+    "titleBar.inactiveBackground": "#1c0e50cb",
     "titleBar.inactiveForeground": "#e7e7e799"
   }
 }
