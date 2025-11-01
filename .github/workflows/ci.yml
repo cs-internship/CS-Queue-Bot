@@ -142,7 +142,7 @@ jobs:
             -H "Authorization: Bearer ${RENDER_API_KEY}" \
             -d '')
 
-          if [ "$RESPONSE" != "200" ]; then
+          if [ "$RESPONSE" != "200" ] && [ "$RESPONSE" != "201" ]; then
             echo "❌ Render deploy failed with status $RESPONSE"
             cat response.json
             exit 1
