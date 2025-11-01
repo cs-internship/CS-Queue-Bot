@@ -1,3 +1,10 @@
+## [3.1.11](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.10...v3.1.11) (2025-11-01)
+
+
+### Bug Fixes
+
+* **ci:** improve Telegram notifications, escape MarkdownV2 ([e70393b](https://github.com/cs-internship/CS-Queue-Bot/commit/e70393bc8725fbc4f833c01ac9bfe6c8759619c6))
+
 ## [3.1.10](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.9...v3.1.10) (2025-11-01)
 
 
