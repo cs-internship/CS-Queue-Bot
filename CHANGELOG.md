@@ -1,3 +1,10 @@
+## [3.1.10](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.9...v3.1.10) (2025-11-01)
+
+
+### Bug Fixes
+
+* **ci:** sanitize Telegram notifications and switch to MarkdownV2 ([5d0b2be](https://github.com/cs-internship/CS-Queue-Bot/commit/5d0b2bedf5ea5e1f100a9beb64cf8c6f37977c18))
+
 ## [3.1.9](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.8...v3.1.9) (2025-11-01)
 
 
