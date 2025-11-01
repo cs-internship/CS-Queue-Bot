@@ -1,3 +1,10 @@
+## [3.1.9](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.8...v3.1.9) (2025-11-01)
+
+
+### Bug Fixes
+
+* **ci:** treat HTTP 201 as a successful Render deploy in workflow ([83a4f32](https://github.com/cs-internship/CS-Queue-Bot/commit/83a4f32eb8cfa557b23dd19b1e4bb5ed68c2dd2d))
+
 ## [3.1.8](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.7...v3.1.8) (2025-11-01)
 
 
