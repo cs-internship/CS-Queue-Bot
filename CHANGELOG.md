@@ -1,3 +1,11 @@
+## [3.1.8](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.7...v3.1.8) (2025-11-01)
+
+
+### Bug Fixes
+
+* **release:** update semantic-release git commit message template ([0a38682](https://github.com/cs-internship/CS-Queue-Bot/commit/0a386820b8227179fb69a8c75f6081385cdcb359))
+* test CI/CD release and tag function ([0984b50](https://github.com/cs-internship/CS-Queue-Bot/commit/0984b50a6fda064c9e3cbefffa1100c460fb8ea4))
+
 ## [3.1.7](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.6...v3.1.7) (2025-10-26)
 
 
