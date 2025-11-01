@@ -1,3 +1,5 @@
+# shellcheck shell=sh
+
 npx --no -- commitlint --edit "${1:-.git/COMMIT_EDITMSG}"
 RESULT=$?
 
