@@ -1,3 +1,10 @@
+## [3.1.12](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.11...v3.1.12) (2025-11-05)
+
+
+### Bug Fixes
+
+* **ci:** enhance Telegram notifications with HTML formatting and improved error handling ([e14b2fb](https://github.com/cs-internship/CS-Queue-Bot/commit/e14b2fb02fb56eacd69aaebcd27cb37ae21ae859))
+
 ## [3.1.11](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.10...v3.1.11) (2025-11-01)
 
 
