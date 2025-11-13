@@ -1,3 +1,10 @@
+## [3.1.13](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.12...v3.1.13) (2025-11-13)
+
+
+### Bug Fixes
+
+* **ci:** update Telegram notification messages to include context and improve clarity ([13e6884](https://github.com/cs-internship/CS-Queue-Bot/commit/13e68842a79d08b0c162cfd987ce5e469d52bcb8))
+
 ## [3.1.12](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.11...v3.1.12) (2025-11-05)
 
 
