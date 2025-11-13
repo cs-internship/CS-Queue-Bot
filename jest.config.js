@@ -1,7 +1,6 @@
 module.exports = {
     testEnvironment: "node",
     collectCoverage: true,
-    // Collect coverage across the whole bot/ folder but exclude tests and config
     collectCoverageFrom: [
         "bot/**/*.js",
         "!bot/**/__tests__/**",
