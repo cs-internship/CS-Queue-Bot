@@ -1,3 +1,10 @@
+## [3.1.14](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.13...v3.1.14) (2026-02-07)
+
+
+### Bug Fixes
+
+* **tests:** temporarily disable user reply in errorReply tests ([a34a422](https://github.com/cs-internship/CS-Queue-Bot/commit/a34a422035958504b4b5b950735522180030a64f))
+
 ## [3.1.13](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.12...v3.1.13) (2025-11-13)
 
 
