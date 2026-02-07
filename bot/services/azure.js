@@ -16,11 +16,17 @@ async function createWorkItem(ctx, userData, isNewID) {
         return;
     }
 
+    // console.log("Creating work item for user:", userData); // Debug log
+
     try {
+        // console.log(ORGANIZATION, PROJECT, WORKITEM_ID); // Debug log
+
         const res = await axios.get(
             `https://dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/wit/workitems/${WORKITEM_ID}?api-version=7.1-preview.3`,
             { headers: { Authorization: AUTH } }
         );
+
+        // console.log("Original Work Item:", res.data); // Debug log
 
         const originalWorkItem = res.data;
         const fieldsToCopy = {
@@ -55,6 +61,8 @@ async function createWorkItem(ctx, userData, isNewID) {
                 attributes: { isLocked: false, name: "Parent" },
             },
         });
+
+        // console.log("Payload for new Work Item:", payload); // Debug log
 
         await axios.post(
             `https://dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/wit/workitems/$Product%20Backlog%20Item?api-version=7.1-preview.3`,

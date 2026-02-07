@@ -1,7 +1,7 @@
 const { ADMIN_GROUP_ID } = require("../config/config");
 
 const errorReply = async (ctx, error) => {
-    await ctx.reply("خطایی رخ داده است! 🤖");
+    // await ctx.reply("خطایی رخ داده است! 🤖"); // Only in TEST
 
     let errorText = "⚠️ *خطایی رخ داده است!*\n\n";
 
