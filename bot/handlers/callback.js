@@ -13,7 +13,7 @@ module.exports = function registerCallbackHandler(bot) {
 
                 await ctx.telegram.sendMessage(
                     userId,
-                    "✅ شما توسط ادمین از بلاک خارج شدید."
+                    "✅ شما توسط برنامه از بلاک خارج شدید."
                 );
 
                 await ctx.telegram.sendMessage(

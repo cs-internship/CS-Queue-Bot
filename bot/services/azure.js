@@ -33,10 +33,16 @@ async function createWorkItem(ctx, userData, isNewID) {
             "System.Title": `Entrance Path: @${userData.username} - ${
                 (userData.first_name ?? "") + " " + (userData.last_name ?? "")
             }`,
-            "System.Description": `<div style="text-align: right;">تاریخ ورود به گروه: ${new Date(
-                ctx.message.date * 1000
-            ).toLocaleString("fa-IR")}
-      <br/><br/><a href="https://t.me/c/1191433472/${
+            "System.Description": `<div style="text-align: right;">
+تاریخ ورود به گروه: ${new Date(ctx.message.date * 1000).toLocaleString(
+                "fa-IR",
+                {
+                    timeZone: "Asia/Tehran",
+                    hour12: false,
+                }
+            )}
+      </div>
+      <br/><br/><a style="text-align: right;" href="https://t.me/c/1191433472/${
           ctx.message.message_id
       }">لینک پیام</a></div>`,
             "System.AreaPath": originalWorkItem.fields["System.AreaPath"],
