@@ -1,3 +1,10 @@
+## [3.1.15](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.14...v3.1.15) (2026-02-17)
+
+
+### Bug Fixes
+
+* **messages:** update ban and unban messages to refer to the program instead of admin ([ff1a0b7](https://github.com/cs-internship/CS-Queue-Bot/commit/ff1a0b70de2940953e2f483f269167798d63a14d))
+
 ## [3.1.14](https://github.com/cs-internship/CS-Queue-Bot/compare/v3.1.13...v3.1.14) (2026-02-07)
 
 

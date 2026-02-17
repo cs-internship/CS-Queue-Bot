@@ -1,6 +1,6 @@
 {
   "name": "cs-queue-bot",
-  "version": "3.1.14",
+  "version": "3.1.15",
   "description": "Automated Telegram bot for managing the CS Internship queue group, with Azure DevOps integration.",
   "main": "./index.js",
   "scripts": {
