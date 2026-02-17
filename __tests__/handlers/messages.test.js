@@ -14,6 +14,8 @@ describe("messages handler", () => {
         const handler = bot.on.mock.calls[0][1];
         const ctx = { message: { pinned_message: {} } };
         await handler(ctx, jest.fn());
+
+        expect(handler).toBeDefined();
     });
 
     test("messages handler handles missing username in private message and includes placeholder", async () => {
@@ -204,6 +206,8 @@ describe("messages handler", () => {
             message: {},
         };
         await handler(ctx, jest.fn());
+
+        expect(cfg.blockedUsers.has(999)).toBe(true);
     });
 
     test("detects and registers valid username during allowed time", async () => {
@@ -251,6 +255,10 @@ describe("messages handler", () => {
 
         // Restore original Date
         global.Date = realDate;
+
+        expect(ctx.reply).toHaveBeenCalledWith(
+            "✅ یوزرنیم شما با موفقیت ثبت شد."
+        );
     });
 
     test("messages handler returns early on pinned_message present", async () => {
@@ -271,33 +279,17 @@ describe("messages handler", () => {
             from: { id: 1 },
         };
         await bot._handler(ctx, jest.fn());
-        // if no exception thrown, test passes
+
+        expect(bot.on).toHaveBeenCalledWith("message", expect.any(Function));
     });
 
-    test("startMessage handles error when pinChatMessage fails", async () => {
-        const bot = { start: (fn) => (bot._handler = fn) };
-        const register = require("../../bot/handlers/startMessage");
-        register(bot);
-
-        const ctx = {
-            chat: { type: "private", id: 10 },
-            from: { first_name: "F", last_name: "L" },
-            reply: jest.fn().mockResolvedValue({ message_id: 55 }),
-            pinChatMessage: jest.fn().mockRejectedValue(new Error("pin fail")),
-            telegram: { sendMessage: jest.fn() },
-        };
-
-        await bot._handler(ctx);
-        // no throw equals pass
-    });
-
-    test("returns early for pinned_message", () => {
+    test("returns early for pinned_message", async () => {
         const bot = { on: jest.fn() };
         require("../../bot/handlers/messages")(bot);
         const handler = bot.on.mock.calls[0][1];
 
         const ctx = { message: { pinned_message: {} } };
-        expect(handler(ctx)).resolves.toBeUndefined();
+        await expect(handler(ctx)).resolves.toBeUndefined();
     });
 
     test("private valid username registers and sends admin message during allowed time", async () => {

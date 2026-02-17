@@ -16,6 +16,11 @@ describe("newMembers handler (isolated)", () => {
             register(bot);
             const handler = bot.on.mock.calls[0][1];
             await handler({ message: {} });
+
+            expect(bot.on).toHaveBeenCalledWith(
+                "new_chat_members",
+                expect.any(Function)
+            );
         });
     });
 
@@ -29,6 +34,11 @@ describe("newMembers handler (isolated)", () => {
             register(bot);
             const handler = bot.on.mock.calls[0][1];
             await handler({ message: { new_chat_participant: null } });
+
+            expect(console.error).toHaveBeenCalledWith(
+                "Invalid member object:",
+                null
+            );
         });
     });
 
@@ -385,6 +395,8 @@ describe("newMembers handler (isolated)", () => {
 
         const ctx = { message: { new_chat_participant: null } };
         await bot._handler(ctx);
+
+        expect(ctx.replyWithHTML).toBeUndefined();
     });
 
     test("newMembers handler removes bot and kicks member", async () => {

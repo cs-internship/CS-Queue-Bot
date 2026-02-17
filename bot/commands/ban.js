@@ -13,7 +13,7 @@ const banCommand = async (ctx) => {
         return;
     }
 
-    if (ctx.message.chat.id != ADMIN_GROUP_ID) {
+    if (String(ctx.message.chat.id) !== String(ADMIN_GROUP_ID)) {
         return;
     }
 

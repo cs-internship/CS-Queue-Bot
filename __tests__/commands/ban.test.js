@@ -21,6 +21,9 @@ describe("banCommand (isolated)", () => {
                 telegram: { sendMessage: jest.fn() },
             };
             await banCommand(ctx);
+
+            expect(ctx.reply).not.toHaveBeenCalled();
+            expect(ctx.telegram.sendMessage).not.toHaveBeenCalled();
         });
     });
 
@@ -197,6 +200,9 @@ describe("banCommand (isolated)", () => {
                 telegram: { sendMessage: jest.fn() },
             };
             await banCommand(ctx);
+
+            expect(ctx.reply).not.toHaveBeenCalled();
+            expect(ctx.telegram.sendMessage).not.toHaveBeenCalled();
         });
     });
 
@@ -325,9 +331,3 @@ describe("banCommand (isolated)", () => {
         });
     });
 });
-const ctx = {
-    message: { chat: { id: 12345 }, reply_to_message: { text: "🆔 777" } },
-    from: { username: "adminUser" },
-    reply: jest.fn(),
-    telegram: { sendMessage: jest.fn().mockResolvedValue(true) },
-};

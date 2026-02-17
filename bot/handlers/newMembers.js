@@ -31,6 +31,7 @@ module.exports = function registerNewMembersHandler(bot) {
                 await ctx.replyWithHTML(botInfo);
                 await ctx.kickChatMember(member.id);
 
+                // eslint-disable-next-line no-console
                 console.log(
                     `Bot removed - ID: ${member.id} | Username: ${member.username}`
                 );

@@ -4,8 +4,6 @@ describe("registerCommands", () => {
     beforeEach(() => {
         jest.resetModules();
         jest.clearAllMocks();
-
-        mockErrorReply = jest.fn();
     });
 
     test("registers expected commands on the bot", () => {

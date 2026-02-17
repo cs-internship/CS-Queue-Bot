@@ -2,11 +2,14 @@ module.exports = {
     testEnvironment: "node",
     collectCoverage: true,
     collectCoverageFrom: [
-        "bot/**/*.js",
-        "!bot/**/__tests__/**",
-        "!bot/config/config.js",
+        "**/*.js",
+        "!node_modules/**",
+        "!coverage/**",
+        "!**/__tests__/**",
+        "!**/coverage/**",
+        "!scripts/**",
     ],
     coverageDirectory: "coverage",
     setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
-    testPathIgnorePatterns: ["/node_modules/", "/coverage/"],
+    testPathIgnorePatterns: ["/node_modules/", "/coverage/", "/scripts/"],
 };

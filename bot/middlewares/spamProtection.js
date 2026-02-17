@@ -1,9 +1,12 @@
-const { isSpamming } = require("../utils/spamProtection");
 const config = require("../config/config");
+const { isSpamming } = require("../utils/spamProtection");
 
 module.exports = async (bot) => {
     bot.use(async (ctx, next) => {
-        if (ctx.message && ctx.message.chat.id == config.GROUP_ID) {
+        if (
+            ctx.message &&
+            String(ctx.message.chat.id) === String(config.GROUP_ID)
+        ) {
             const userId = ctx.from.id;
 
             if (

@@ -1,10 +1,10 @@
 const moment = require("jalali-moment");
+
 const { startCalendarDate } = require("../config/config");
 const events = require("../constants/events");
 
 const getEventForDate = (dateInput) => {
-    let date;
-    date = dateInput.clone().startOf("day");
+    const date = dateInput.clone().startOf("day");
 
     const startDate = moment(startCalendarDate, "YYYY-MM-DD");
 

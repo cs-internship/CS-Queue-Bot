@@ -169,9 +169,6 @@ describe("startMessage handler", () => {
             "@yourusername"
         );
     });
-});
-describe("startMessage handler", () => {
-    beforeEach(() => jest.resetModules());
 
     test("for non-private chat calls sendReaction and does not reply", () => {
         const mockSendReaction = jest.fn();

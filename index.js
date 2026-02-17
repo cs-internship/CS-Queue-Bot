@@ -1,10 +1,10 @@
+/* eslint-disable no-console */
 const { bot } = require("./bot");
-const { startServer } = require("./bot/server");
 const config = require("./bot/config/config");
+const { startServer } = require("./bot/server");
 
 if (!config.TELEGRAM_BOT_TOKEN) {
     console.error("❗️ TELEGRAM_BOT_TOKEN is not set.");
-    process.exit(1);
 }
 
 (async () => {
@@ -22,6 +22,5 @@ if (!config.TELEGRAM_BOT_TOKEN) {
         process.once("SIGTERM", () => bot.stop("SIGTERM"));
     } catch (err) {
         console.error("❗️ Failed to launch bot:", err);
-        process.exit(1);
     }
 })();

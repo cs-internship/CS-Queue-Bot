@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { ADMIN_GROUP_ID, blockedUsers } = require("../config/config");
 const { isSpamming } = require("../utils/spamProtection");
 

@@ -90,7 +90,6 @@ describe("createWorkItem service", () => {
 
     test("createWorkItem replies when isNewID true after POST", async () => {
         await jest.isolateModulesAsync(async () => {
-            const axios = require("axios");
             jest.doMock("axios", () => ({
                 get: jest.fn().mockResolvedValue({
                     data: {

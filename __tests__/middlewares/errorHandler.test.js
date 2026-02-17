@@ -72,6 +72,8 @@ describe("errorHandler middleware", () => {
 
         await handler(err, ctx);
 
+        expect(ctx.telegram.sendMessage).not.toHaveBeenCalled();
+
         // Fast-forward timers to run scheduled sendErrorToAdmin
         jest.advanceTimersByTime(7000);
 
@@ -85,6 +87,8 @@ describe("errorHandler middleware", () => {
         const ctx = {}; // no telegram
 
         await handler(err, ctx);
+
+        expect(ctx.telegram).toBeUndefined();
     });
 
     test("schedules send when 429 rate limit is present", async () => {

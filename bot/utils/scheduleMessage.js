@@ -1,5 +1,7 @@
 const cron = require("node-cron");
+
 const { ADMIN_GROUP_ID } = require("../config/config");
+
 const { getTodayEvent } = require("./getTodayEvent");
 
 const scheduleAdminMessage = (bot) => {
@@ -15,9 +17,6 @@ const scheduleAdminMessage = (bot) => {
                 const { hasEvent, title } = getTodayEvent();
 
                 if (!hasEvent) {
-                    console.log(
-                        `[ℹ️] No event today. Skipping message at ${new Date().toLocaleString()}`
-                    );
                     return;
                 }
 
